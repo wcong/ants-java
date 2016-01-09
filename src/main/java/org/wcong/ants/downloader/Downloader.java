@@ -8,6 +8,6 @@ package org.wcong.ants.downloader;
  */
 public interface Downloader {
 
-	Response download();
+	Response download(Request request);
 
 }
