@@ -1,7 +1,15 @@
 package org.wcong.ants.downloader.support;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.MethodNotSupportedException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.Status;
@@ -9,9 +17,13 @@ import org.wcong.ants.downloader.Downloader;
 import org.wcong.ants.downloader.Request;
 import org.wcong.ants.downloader.Response;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * default downloader for ants
@@ -23,13 +35,15 @@ public class DefaultDownloader implements Downloader {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultDownloader.class);
 
+	private CloseableHttpClient httpClient = HttpClients.createDefault();
+
 	private BlockingQueue<Request> requests;
 
 	private BlockingQueue<Response> responses;
 
 	private ExecutorService downloadThreadPool = Executors.newFixedThreadPool(16);
 
-	private Status status = Status.NONE;
+	private volatile Status status = Status.NONE;
 
 	public void init(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
 		this.requests = requests;
@@ -48,30 +62,71 @@ public class DefaultDownloader implements Downloader {
 		status = Status.RUNNING;
 	}
 
-	public Response download(Request request) {
-
+	public void stop() {
+		status = Status.STOP;
 	}
 
-	private HttpRequest makeRequest(Request request){
-		HttpRequest httpRequest =
+	public void download(final Request request) {
+		logger.info("start download request {}", request);
+		downloadThreadPool.submit(new Runnable() {
+			public void run() {
+				try {
+					HttpUriRequest httpUriRequest = makeRequest(request);
+					CloseableHttpResponse httpResponse = httpClient.execute(httpUriRequest);
+					logger.info("downloaded request {}", request);
+					Response response = makeResponse(request, httpResponse);
+					if (response != null) {
+						responses.add(response);
+						logger.info("push response to queue");
+					}
+				} catch (Exception e) {
+					logger.error("download error", e);
+				}
+			}
+		});
+	}
+
+	private Response makeResponse(Request request, CloseableHttpResponse httpResponse) throws IOException {
+		HttpEntity entity = httpResponse.getEntity();
+		String content = EntityUtils.toString(entity);
+		httpResponse.close();
+		Response response = new Response();
+		response.setDocument(Jsoup.parse(content, request.getUrl()));
+		response.setRequest(request);
+		return response;
+	}
+
+	private HttpUriRequest makeRequest(Request request)
+			throws MethodNotSupportedException, UnsupportedEncodingException {
+		RequestBuilder requestBuilder = RequestBuilder.create(request.getMethod()).setUri(request.getUrl());
+		if (request.getBody() != null) {
+			requestBuilder.setEntity(new StringEntity(request.getBody()));
+		}
+		if (request.getHeader() != null) {
+			for (Map.Entry<String, String> header : request.getHeader().entrySet()) {
+				requestBuilder.addHeader(header.getKey(), header.getValue());
+			}
+		}
+		return requestBuilder.build();
 	}
 
 	public void run() {
 		if (requests == null) {
 			return;
 		}
+		status = Status.RUNNING;
 		Request request;
 		try {
-			while ((request = requests.take()) != null) {
-				Response response = download(request);
-				if (response != null) {
-					responses.add(response);
+			while (status == Status.RUNNING) {
+				if ((request = requests.poll(1, TimeUnit.SECONDS)) != null) {
+					download(request);
 				}
 			}
 		} catch (Exception e) {
 			logger.error("run downloader error", e);
 			status = Status.PURSE;
 		}
+		downloadThreadPool.shutdown();
 	}
 
 }

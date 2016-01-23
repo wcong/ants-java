@@ -8,6 +8,6 @@ package org.wcong.ants.downloader;
  */
 public interface Downloader {
 
-	Response download(Request request);
+	void download(Request request) throws Exception;
 
 }

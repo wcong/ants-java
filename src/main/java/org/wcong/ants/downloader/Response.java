@@ -18,19 +18,8 @@ public class Response {
 	private Document document;
 
 	/**
-	 * crawl depth
+	 * source for response
 	 */
-	private int depth;
-
-	/**
-	 * retry time
-	 */
-	private int retry;
-
-	private String spiderName;
-
-	private String parseName;
-
-	private String nodeName;
+	private Request request;
 
 }

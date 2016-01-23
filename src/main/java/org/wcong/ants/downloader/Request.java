@@ -27,7 +27,7 @@ public class Request {
 
 	private String body;
 
-	private String method;
+	private String method = METHOD_GET;
 
 	private int cookieJar;
 

@@ -40,8 +40,7 @@ public class NettyDownloader implements Downloader {
 		status = Status.RUNNING;
 	}
 
-	public Response download() {
-		Document document = Jsoup.parse("");
-		return null;
+	public void download(Request request) throws Exception {
+
 	}
 }

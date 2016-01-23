@@ -1,4 +1,4 @@
-package org.wcong;
+package org.wcong.ants;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
