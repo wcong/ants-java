@@ -16,25 +16,33 @@ public class ClientHandler {
 
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) {
+			logger.info("get meg " + msg);
 		}
 
 		@Override
 		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-
+			logger.error("error", cause);
 		}
 
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) {
 			ChannelFuture f = ctx.writeAndFlush("abcd");
 			logger.info("write abcd");
-			f.addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 
 	public static class ClientOutHandler extends ChannelOutboundHandlerAdapter {
+
+		private static Logger logger = LoggerFactory.getLogger(ClientOutHandler.class);
+
 		@Override
 		public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-			ctx.write("abcd", promise);
+			ctx.write(msg, promise);
+		}
+
+		@Override
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+			logger.error("error", cause);
 		}
 	}
 }

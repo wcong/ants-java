@@ -14,7 +14,9 @@ public class RpcTest {
 		final Server server = new Server();
 		server.run();
 		client.run();
-		Thread.sleep(10000);
+		client.getChannel().writeAndFlush("haha").sync();
+		Server.getChannel("").writeAndFlush("hehe").sync();
+		Thread.sleep(1000);
 	}
 
 }
