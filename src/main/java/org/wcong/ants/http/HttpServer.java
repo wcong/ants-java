@@ -22,7 +22,7 @@ public class HttpServer {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
-	private int port = 9300;
+	private int port = 8300;
 
 	public void setPort(int port) {
 		this.port = port;
