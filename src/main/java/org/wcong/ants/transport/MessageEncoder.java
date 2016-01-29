@@ -1,9 +1,8 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import org.wcong.ants.rpc.support.DefaultCodec;
 
 /**
  * @author wcong<wc19920415@gmail.com>

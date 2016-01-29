@@ -13,6 +13,8 @@ import org.wcong.ants.downloader.support.DefaultDownloader;
 import org.wcong.ants.http.HttpServer;
 import org.wcong.ants.spider.SpiderManager;
 import org.wcong.ants.spider.support.DefaultSpiderManager;
+import org.wcong.ants.transport.TransportClient;
+import org.wcong.ants.transport.TransportServer;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -37,6 +39,10 @@ public class DefaultNode implements Node {
 
 	private Downloader downloader = new DefaultDownloader();
 
+	private TransportClient transportClient = new TransportClient();
+
+	private TransportServer transportServer = new TransportServer();
+
 	public void setNodeConfig(NodeConfig nodeConfig) {
 		this.nodeConfig = nodeConfig;
 	}
@@ -54,6 +60,7 @@ public class DefaultNode implements Node {
 		crawler.setSpiderManager(spiderManager);
 		downloader.setQueue(requestBlockingDeque, responseBlockingDeque);
 		httpServer.setNode(this);
+		transportServer.setPort(nodeConfig.getTcpPort());
 	}
 
 	public void start() {

@@ -1,11 +1,10 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wcong.ants.rpc.support.DefaultCodec;
 
 import java.util.List;
 

@@ -37,11 +37,6 @@ public class DouBanSpider extends Spider {
 		return requests;
 	}
 
-	@Override
-	public String getName() {
-		return name;
-	}
-
 	public void init() {
 		parserMap.put(DEFAULT_PARSE_NAME, new DefaultParser());
 	}

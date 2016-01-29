@@ -1,4 +1,4 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -13,9 +13,9 @@ import org.wcong.ants.LifeCircle;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/1/25
  */
-public class Client implements LifeCircle {
+public class TransportClient implements LifeCircle {
 
-	private static Logger logger = LoggerFactory.getLogger(Client.class);
+	private static Logger logger = LoggerFactory.getLogger(TransportClient.class);
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 

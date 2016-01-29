@@ -1,4 +1,4 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import org.junit.Test;
 
@@ -10,12 +10,12 @@ public class RpcTest {
 
 	@Test
 	public void test() throws InterruptedException {
-		final Client client = new Client();
-		final Server server = new Server();
+		final TransportClient client = new TransportClient();
+		final TransportServer server = new TransportServer();
 		server.run();
 		client.run();
 		client.getChannel().writeAndFlush("haha").sync();
-		Server.getChannel("").writeAndFlush("hehe").sync();
+		TransportServer.getChannel("").writeAndFlush("hehe").sync();
 		Thread.sleep(1000);
 	}
 

@@ -1,4 +1,4 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -29,7 +29,7 @@ public class ServerHandler {
 
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) {
-			Server.addChannel(ctx.channel());
+			TransportServer.addChannel(ctx.channel());
 		}
 	}
 

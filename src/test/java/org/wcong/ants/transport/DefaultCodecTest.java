@@ -1,9 +1,9 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
-import org.wcong.ants.rpc.support.DefaultCodec;
+import org.wcong.ants.transport.support.DefaultCodec;
 
 /**
  * @author wcong<wc19920415@gmail.com>

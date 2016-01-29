@@ -1,4 +1,4 @@
-package org.wcong.ants.rpc;
+package org.wcong.ants.transport;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -18,9 +18,9 @@ import org.wcong.ants.LifeCircle;
  * @author wcong<wc19920415@gmail.com>
  * @since 15/12/18
  */
-public class Server implements LifeCircle {
+public class TransportServer implements LifeCircle {
 
-	private static Logger logger = LoggerFactory.getLogger(Server.class);
+	private static Logger logger = LoggerFactory.getLogger(TransportServer.class);
 
 	private int port = 8200;
 
@@ -46,10 +46,6 @@ public class Server implements LifeCircle {
 
 	public void setPort(int port) {
 		this.port = port;
-	}
-
-	public int getPort() {
-		return port;
 	}
 
 	public void init() {

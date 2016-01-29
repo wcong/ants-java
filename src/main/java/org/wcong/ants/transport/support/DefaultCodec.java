@@ -1,9 +1,9 @@
-package org.wcong.ants.rpc.support;
+package org.wcong.ants.transport.support;
 
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wcong.ants.rpc.Codec;
+import org.wcong.ants.transport.Codec;
 import org.wcong.ants.util.ByteUtils;
 
 import java.io.*;

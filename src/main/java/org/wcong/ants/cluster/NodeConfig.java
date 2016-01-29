@@ -10,10 +10,20 @@ import java.util.List;
  */
 public interface NodeConfig {
 
+	void load(String name);
+
 	List<String> getSpiderPackages();
 
 	void setSpiderPackages(List<String> spiderPackages);
 
 	void addSpiderPackage(String packageName);
+
+	void setTcpPort(int port);
+
+	int getTcpPort();
+
+	void setHttpPort(int port);
+
+	int getHttpPort();
 
 }
