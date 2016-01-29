@@ -15,9 +15,9 @@ import java.util.List;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/1/24
  */
-public class SpiderScanner {
+public class ClassScanner {
 
-	private static Logger logger = LoggerFactory.getLogger(SpiderScanner.class);
+	private static Logger logger = LoggerFactory.getLogger(ClassScanner.class);
 
 	private static final char DIR_SEPARATOR = '/';
 
@@ -32,8 +32,8 @@ public class SpiderScanner {
 	 * @param packages   packages
 	 * @return class list
 	 */
-	public static List<Class<?>> scanPackages(Class<?> spiderType, String... packages) {
-		List<Class<?>> classList = new LinkedList<Class<?>>();
+	public static <T> List<Class<T>> scanPackages(Class<T> spiderType, String... packages) {
+		List<Class<T>> classList = new LinkedList<Class<T>>();
 		for (String basicPackage : packages) {
 			classList.addAll(scanPackage(spiderType, basicPackage));
 		}
@@ -47,7 +47,7 @@ public class SpiderScanner {
 	 * @param packageName packageName
 	 * @return class list
 	 */
-	public static List<Class<?>> scanPackage(Class<?> spiderType, String packageName) {
+	public static <T> List<Class<T>> scanPackage(Class<T> spiderType, String packageName) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		Enumeration<URL> urls = null;
 		try {
@@ -58,7 +58,7 @@ public class SpiderScanner {
 		if (urls == null) {
 			return Collections.emptyList();
 		}
-		List<Class<?>> classList = new LinkedList<Class<?>>();
+		List<Class<T>> classList = new LinkedList<Class<T>>();
 		while (urls.hasMoreElements()) {
 			classList.addAll(scanUrl(spiderType, urls.nextElement(), packageName));
 		}
@@ -73,7 +73,7 @@ public class SpiderScanner {
 	 * @param packageName basic package name
 	 * @return class list
 	 */
-	public static List<Class<?>> scanUrl(Class<?> spiderType, URL url, String packageName) {
+	public static <T> List<Class<T>> scanUrl(Class<T> spiderType, URL url, String packageName) {
 		if (url == null || spiderType == null || packageName == null) {
 			return Collections.emptyList();
 		}
@@ -82,7 +82,7 @@ public class SpiderScanner {
 		if (childFiles == null) {
 			return Collections.emptyList();
 		}
-		List<Class<?>> classList = new LinkedList<Class<?>>();
+		List<Class<T>> classList = new LinkedList<Class<T>>();
 		for (File file : childFiles) {
 			classList.addAll(scanFile(spiderType, file, packageName));
 		}
@@ -97,8 +97,8 @@ public class SpiderScanner {
 	 * @param packageName name of package
 	 * @return class list
 	 */
-	public static List<Class<?>> scanFile(Class<?> spiderType, File file, String packageName) {
-		List<Class<?>> classList = new LinkedList<Class<?>>();
+	public static <T> List<Class<T>> scanFile(Class<T> spiderType, File file, String packageName) {
+		List<Class<T>> classList = new LinkedList<Class<T>>();
 		if (file.isDirectory()) {
 			File[] childFiles = file.listFiles();
 			if (childFiles != null) {

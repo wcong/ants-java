@@ -12,6 +12,7 @@ public class HttpServerTest {
 	public void testServer() {
 		HttpServer httpServer = new HttpServer();
 		httpServer.start();
+		httpServer.stop();
 	}
 
 }

@@ -6,12 +6,15 @@ import org.wcong.ants.Status;
 import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.crawler.Spider;
 import org.wcong.ants.downloader.Request;
 import org.wcong.ants.downloader.Response;
+import org.wcong.ants.spider.Spider;
+import org.wcong.ants.spider.SpiderManager;
 
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -21,7 +24,7 @@ public class DefaultCrawler implements Crawler {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultCrawler.class);
 
-	private Map<String, Spider> spiderMap = new ConcurrentHashMap<String, Spider>();
+	private SpiderManager spiderManager;
 
 	private BlockingQueue<Request> requests;
 
@@ -31,17 +34,9 @@ public class DefaultCrawler implements Crawler {
 
 	private volatile Status status = Status.NONE;
 
-	public void init(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
+	public void setQueue(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
 		this.requests = requests;
 		this.responses = responses;
-	}
-
-	public void addSpider(Spider spider) {
-		spiderMap.put(spider.getName(), spider);
-	}
-
-	public void removeSpider(Spider spider) {
-		spiderMap.remove(spider.getName());
 	}
 
 	public void crawl(final Response response) {
@@ -54,7 +49,7 @@ public class DefaultCrawler implements Crawler {
 			logger.warn("null request for response {}", response);
 			return;
 		}
-		Spider spider = spiderMap.get(request.getSpiderName());
+		Spider spider = spiderManager.getSpider(request.getSpiderName());
 		if (spider == null) {
 			logger.warn("none spider for response {}", response);
 			return;
@@ -92,8 +87,31 @@ public class DefaultCrawler implements Crawler {
 		crawlThreadPool.shutdown();
 	}
 
+	public void init() {
+
+	}
+
+	public void start() {
+		run();
+	}
+
+	public void pause() {
+
+	}
+
+	public void resume() {
+
+	}
+
 	public void stop() {
 		status = Status.STOP;
 	}
 
+	public void destroy() {
+
+	}
+
+	public void setSpiderManager(SpiderManager spiderManager) {
+		this.spiderManager = spiderManager;
+	}
 }

@@ -45,13 +45,22 @@ public class DefaultDownloader implements Downloader {
 
 	private volatile Status status = Status.NONE;
 
-	public void init(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
+	public void setQueue(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
 		this.requests = requests;
 		this.responses = responses;
 	}
 
+	public void init() {
+
+	}
+
 	public void start() {
 		status = Status.RUNNING;
+		run();
+	}
+
+	public void pause() {
+
 	}
 
 	public void parse() {
@@ -64,6 +73,10 @@ public class DefaultDownloader implements Downloader {
 
 	public void stop() {
 		status = Status.STOP;
+	}
+
+	public void destroy() {
+
 	}
 
 	public void download(final Request request) {

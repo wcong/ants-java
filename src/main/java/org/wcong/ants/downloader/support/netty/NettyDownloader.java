@@ -1,7 +1,5 @@
 package org.wcong.ants.downloader.support.netty;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.wcong.ants.Status;
 import org.wcong.ants.downloader.Downloader;
 import org.wcong.ants.downloader.Request;
@@ -23,13 +21,21 @@ public class NettyDownloader implements Downloader {
 
 	private Status status = Status.NONE;
 
-	public void init(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
+	public void setQueue(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
 		this.requests = requests;
 		this.responses = responses;
 	}
 
+	public void init() {
+
+	}
+
 	public void start() {
 		status = Status.RUNNING;
+	}
+
+	public void pause() {
+
 	}
 
 	public void parse() {
@@ -38,6 +44,14 @@ public class NettyDownloader implements Downloader {
 
 	public void resume() {
 		status = Status.RUNNING;
+	}
+
+	public void stop() {
+
+	}
+
+	public void destroy() {
+
 	}
 
 	public void download(Request request) throws Exception {

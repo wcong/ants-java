@@ -1,7 +1,7 @@
 package org.wcong.ants.util;
 
 import org.junit.Test;
-import org.wcong.ants.crawler.Spider;
+import org.wcong.ants.spider.Spider;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -11,7 +11,7 @@ public class SpiderScannerTest {
 
 	@Test
 	public void testScan() {
-		System.out.println(SpiderScanner.scanPackages(Spider.class, "org.wcong.ants"));
+		System.out.println(ClassScanner.scanPackages(Spider.class, "org.wcong.ants"));
 	}
 
 }

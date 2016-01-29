@@ -22,7 +22,7 @@ public class DefaultDownloaderTest {
 		request.setParseName("test");
 		request.setNodeName("test");
 		request.setUrl("http://www.baidu.com");
-		defaultDownloader.init(requestBlockingDeque, new LinkedBlockingDeque<Response>());
+		defaultDownloader.setQueue(requestBlockingDeque, new LinkedBlockingDeque<Response>());
 		defaultDownloader.run();
 		defaultDownloader.stop();
 	}

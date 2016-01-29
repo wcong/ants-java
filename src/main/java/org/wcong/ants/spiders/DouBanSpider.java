@@ -1,4 +1,4 @@
-package org.wcong.ants.spider;
+package org.wcong.ants.spiders;
 
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
@@ -7,9 +7,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.crawler.Spider;
 import org.wcong.ants.downloader.Request;
 import org.wcong.ants.downloader.Response;
+import org.wcong.ants.spider.Spider;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.List;
  */
 public class DouBanSpider extends Spider {
 
-	public DouBanSpider(String name) {
-		super(name);
+	public DouBanSpider() {
+		super("DouBan");
 	}
 
 	@Override
@@ -35,6 +35,11 @@ public class DouBanSpider extends Spider {
 		request.setParseName(DEFAULT_PARSE_NAME);
 		requests.add(request);
 		return requests;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	public void init() {

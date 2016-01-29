@@ -45,7 +45,7 @@ public class NettyHttpClient {
 			f.channel().closeFuture().sync();
 
 		} catch (Exception e) {
-			logger.error("init NettyHttpClient for host:" + host + " error", e);
+			logger.error("setQueue NettyHttpClient for host:" + host + " error", e);
 		} finally {
 			workerGroup.shutdownGracefully();
 		}

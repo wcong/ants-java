@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wcong.ants.rpc.support.DefaultCodec;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 	@Override
 	public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		logger.info("coming message " + in.readableBytes());
-		Object object = DefaultCodec.codec.decode(in);
+		Object object = Codec.codec.decode(in);
 		if (object != null) {
 			out.add(object);
 		}

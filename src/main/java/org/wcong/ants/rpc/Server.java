@@ -42,8 +42,6 @@ public class Server implements LifeCircle {
 		return channelGroup.iterator().next();
 	}
 
-	private ServerBootstrap b;
-
 	private ChannelFuture f;
 
 	public void setPort(int port) {
@@ -58,6 +56,7 @@ public class Server implements LifeCircle {
 	}
 
 	public void start() {
+		run();
 	}
 
 	public void pause() {
@@ -85,7 +84,7 @@ public class Server implements LifeCircle {
 
 	public void run() {
 		try {
-			b = new ServerBootstrap();
+			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup);
 			b.channel(NioServerSocketChannel.class);
 			b.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);

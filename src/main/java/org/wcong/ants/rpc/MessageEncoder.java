@@ -3,6 +3,7 @@ package org.wcong.ants.rpc;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.wcong.ants.rpc.support.DefaultCodec;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -11,6 +12,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public class MessageEncoder extends MessageToByteEncoder {
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
-		out.writeBytes(DefaultCodec.codec.encode(msg));
+		out.writeBytes(Codec.codec.encode(msg));
 	}
 }

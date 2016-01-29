@@ -1,6 +1,8 @@
-package org.wcong.ants.crawler;
+package org.wcong.ants.spider;
 
 import lombok.Data;
+import org.wcong.ants.crawler.CrawlerIntegrate;
+import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.downloader.Request;
 
 import java.util.HashMap;
@@ -24,18 +26,22 @@ public abstract class Spider {
 
 	protected Map<String, Object> extMap;
 
+	public Spider(String name) {
+		this.name = name;
+	}
+
 	protected Map<String, Parser> parserMap = new HashMap<String, Parser>();
 
 	public Parser getParser(String parseName) {
 		return parserMap.get(parseName);
 	}
 
-	public Spider(String name) {
-		this.name = name;
-	}
-
 	public abstract void init();
 
 	public abstract List<Request> getFirstRequests();
+
+	public String getName() {
+		return name;
+	}
 
 }

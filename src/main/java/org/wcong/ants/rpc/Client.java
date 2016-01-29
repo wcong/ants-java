@@ -50,7 +50,7 @@ public class Client implements LifeCircle {
 	}
 
 	public void start() {
-
+		run();
 	}
 
 	public void pause() {

@@ -3,6 +3,7 @@ package org.wcong.ants.rpc;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
+import org.wcong.ants.rpc.support.DefaultCodec;
 
 /**
  * @author wcong<wc19920415@gmail.com>

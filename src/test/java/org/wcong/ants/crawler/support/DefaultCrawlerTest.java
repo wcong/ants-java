@@ -1,11 +1,11 @@
 package org.wcong.ants.crawler.support;
 
 import org.junit.Test;
-import org.wcong.ants.crawler.Spider;
+import org.wcong.ants.spider.Spider;
 import org.wcong.ants.downloader.Request;
 import org.wcong.ants.downloader.Response;
 import org.wcong.ants.downloader.support.DefaultDownloader;
-import org.wcong.ants.spider.DouBanSpider;
+import org.wcong.ants.spiders.DouBanSpider;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -22,12 +22,11 @@ public class DefaultCrawlerTest {
 		BlockingDeque<Response> responseBlockingDeque = new LinkedBlockingDeque<Response>();
 		final DefaultDownloader defaultDownloader = new DefaultDownloader();
 		final DefaultCrawler defaultCrawler = new DefaultCrawler();
-		defaultDownloader.init(requestBlockingDeque, responseBlockingDeque);
-		defaultCrawler.init(requestBlockingDeque, responseBlockingDeque);
-		Spider spider = new DouBanSpider("DouBan");
+		defaultDownloader.setQueue(requestBlockingDeque, responseBlockingDeque);
+		defaultCrawler.setQueue(requestBlockingDeque, responseBlockingDeque);
+		Spider spider = new DouBanSpider();
 		spider.init();
 		requestBlockingDeque.addAll(spider.getFirstRequests());
-		defaultCrawler.addSpider(spider);
 		new Thread(new Runnable() {
 			public void run() {
 				defaultDownloader.run();

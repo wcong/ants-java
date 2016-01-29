@@ -43,6 +43,14 @@
             <version>4.4.1</version>
         </dependency>
 
+        <!-- json -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-lgpl</artifactId>
+            <version>1.9.7</version>
+        </dependency>
+        <!-- json -->
+
 
         <!-- log -->
         <dependency>
