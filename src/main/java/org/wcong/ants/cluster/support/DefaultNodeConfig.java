@@ -80,4 +80,16 @@ public class DefaultNodeConfig implements NodeConfig {
 	public int getHttpPort() {
 		return httpPort;
 	}
+
+	public int setMaster(String ip, int port) {
+		return 0;
+	}
+
+	public String getMasterIp() {
+		return null;
+	}
+
+	public int getMasterPort() {
+		return 0;
+	}
 }

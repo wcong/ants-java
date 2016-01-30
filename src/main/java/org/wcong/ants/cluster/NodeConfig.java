@@ -26,4 +26,10 @@ public interface NodeConfig {
 
 	int getHttpPort();
 
+	int setMaster(String ip, int port);
+
+	String getMasterIp();
+
+	int getMasterPort();
+
 }
