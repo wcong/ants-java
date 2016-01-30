@@ -25,11 +25,9 @@ public class Ants {
 
 	private static void parseArgs(String[] args, NodeConfig nodeConfig) {
 		int length = args.length;
-		if (length % 2 == 1) {
-			length -= 1;
-		}
+		length /= 2;
 		for (int i = 0; i < length; i++) {
-			int index = length * 2;
+			int index = i * 2;
 			if (args[index].equals("-tcp")) {
 				nodeConfig.setTcpPort(Integer.valueOf(args[index + 1]));
 			} else if (args[index].equals("-http")) {

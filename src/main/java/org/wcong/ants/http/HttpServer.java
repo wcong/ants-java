@@ -62,6 +62,7 @@ public class HttpServer implements LifeCircle {
 					}
 				}).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 		try {
+			logger.info("start http at port {}", port);
 			f = b.bind(port).sync();
 		} catch (Exception e) {
 			logger.error("get error", e);

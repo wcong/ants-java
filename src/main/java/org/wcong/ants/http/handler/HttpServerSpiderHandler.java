@@ -34,6 +34,7 @@ public class HttpServerSpiderHandler extends HttpServerHandler {
 		releaseContent(content);
 		List<String> spider = query.parameters().get("spider");
 		if (spider == null || spider.isEmpty()) {
+			sendResponse(ctx, request, "none spider".getBytes());
 			return;
 		}
 		node.getSpiderManager().startSpider(spider.get(0));
@@ -47,7 +48,7 @@ public class HttpServerSpiderHandler extends HttpServerHandler {
 			logger.error("encode error", e);
 		}
 		if (data == null) {
-			data = new byte[0];
+			data = "none spider".getBytes();
 		}
 		sendResponse(ctx, request, data);
 	}

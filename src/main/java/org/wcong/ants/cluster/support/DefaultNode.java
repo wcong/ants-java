@@ -60,6 +60,7 @@ public class DefaultNode implements Node {
 		crawler.setSpiderManager(spiderManager);
 		downloader.setQueue(requestBlockingDeque, responseBlockingDeque);
 		httpServer.setNode(this);
+		httpServer.setPort(nodeConfig.getHttpPort());
 		transportServer.setPort(nodeConfig.getTcpPort());
 	}
 
