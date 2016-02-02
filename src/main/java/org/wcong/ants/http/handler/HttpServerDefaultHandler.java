@@ -20,17 +20,11 @@ import java.util.Map;
 public class HttpServerDefaultHandler extends HttpServerHandler {
 	private static Logger logger = LoggerFactory.getLogger(HttpServerDefaultHandler.class);
 
-	private String handleUri;
-
 	private Map<String, Object> welcome = new HashMap<String, Object>();
 
 	{
 		welcome.put("message", "fow crawl");
 		welcome.put("greeting", "do not panic");
-	}
-
-	public HttpServerDefaultHandler() {
-		handleUri = "";
 	}
 
 	@Override
@@ -52,6 +46,6 @@ public class HttpServerDefaultHandler extends HttpServerHandler {
 
 	@Override
 	public String getHandlerUri() {
-		return handleUri;
+		return "";
 	}
 }

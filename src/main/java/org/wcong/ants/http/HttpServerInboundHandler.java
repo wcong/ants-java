@@ -1,5 +1,6 @@
 package org.wcong.ants.http;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpContent;
@@ -18,6 +19,7 @@ import java.util.Map;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/1/24
  */
+@ChannelHandler.Sharable
 public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpServerInboundHandler.class);

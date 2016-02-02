@@ -1,6 +1,6 @@
 package org.wcong.ants.spider;
 
-import org.wcong.ants.QueueInit;
+import org.wcong.ants.aware.ClusterQueueAware;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/1/29
  */
-public interface SpiderManager extends QueueInit {
+public interface SpiderManager extends ClusterQueueAware {
 
 	void loadSpider(List<String> spiderPackages);
 

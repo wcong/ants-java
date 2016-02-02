@@ -1,7 +1,8 @@
-package org.wcong.ants.downloader;
+package org.wcong.ants.spider;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -11,7 +12,9 @@ import java.util.Map;
  * @since 15/12/20
  */
 @Data
-public class Request {
+public class Request implements Serializable {
+
+	private static final long serialVersionUID = -3994932730423619546L;
 
 	public static String METHOD_GET = "GET";
 
@@ -20,6 +23,8 @@ public class Request {
 	public static String METHOD_PUT = "PUT";
 
 	public static String METHOD_DELETE = "DELETE";
+
+	private String id;
 
 	private String url;
 

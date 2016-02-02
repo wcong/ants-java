@@ -3,15 +3,12 @@ package org.wcong.ants.crawler.support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.Status;
+import org.wcong.ants.cluster.ClusterRequestBlockingQueue;
 import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.downloader.Request;
-import org.wcong.ants.downloader.Response;
-import org.wcong.ants.spider.Spider;
-import org.wcong.ants.spider.SpiderManager;
+import org.wcong.ants.spider.*;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -26,18 +23,13 @@ public class DefaultCrawler implements Crawler {
 
 	private SpiderManager spiderManager;
 
-	private BlockingQueue<Request> requests;
+	private ClusterRequestBlockingQueue clusterRequests;
 
-	private BlockingQueue<Response> responses;
+	private ResponseBlockingQueue responses;
 
 	private ExecutorService crawlThreadPool = Executors.newFixedThreadPool(16);
 
 	private volatile Status status = Status.NONE;
-
-	public void setQueue(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
-		this.requests = requests;
-		this.responses = responses;
-	}
 
 	public void crawl(final Response response) {
 		if (response == null) {
@@ -66,7 +58,7 @@ public class DefaultCrawler implements Crawler {
 				logger.info("crawled response");
 				if (result != null && result.getRequestList() != null) {
 					logger.info("push request to queue {}", result.getRequestList());
-					requests.addAll(result.getRequestList());
+					clusterRequests.addToCluster(response.getRequest(), result.getRequestList());
 				}
 			}
 		});
@@ -113,5 +105,13 @@ public class DefaultCrawler implements Crawler {
 
 	public void setSpiderManager(SpiderManager spiderManager) {
 		this.spiderManager = spiderManager;
+	}
+
+	public void setClusterQueue(ClusterRequestBlockingQueue clusterRequestBlockingQueue) {
+		this.clusterRequests = clusterRequestBlockingQueue;
+	}
+
+	public void setQueue(RequestBlockingQueue requests, ResponseBlockingQueue responses) {
+		this.responses = responses;
 	}
 }

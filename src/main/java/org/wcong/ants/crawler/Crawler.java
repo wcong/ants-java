@@ -1,9 +1,10 @@
 package org.wcong.ants.crawler;
 
 import org.wcong.ants.LifeCircle;
-import org.wcong.ants.QueueInit;
-import org.wcong.ants.SpiderManagerInit;
-import org.wcong.ants.downloader.Response;
+import org.wcong.ants.aware.ClusterQueueAware;
+import org.wcong.ants.aware.QueueAware;
+import org.wcong.ants.aware.SpiderManagerAware;
+import org.wcong.ants.spider.Response;
 
 /**
  * a crawler
@@ -11,7 +12,7 @@ import org.wcong.ants.downloader.Response;
  * @author wcong<wc19920415@gmail.com>
  * @since 15/12/24
  */
-public interface Crawler extends LifeCircle, QueueInit, SpiderManagerInit {
+public interface Crawler extends LifeCircle, QueueAware, SpiderManagerAware, ClusterQueueAware {
 
 	void crawl(Response response);
 

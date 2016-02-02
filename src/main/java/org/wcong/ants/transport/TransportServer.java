@@ -28,6 +28,8 @@ public class TransportServer implements LifeCircle {
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 
+	private ServerHandler.ServerInHandler inHandler;
+
 	private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
 	public static void addChannel(Channel channel) {
@@ -87,15 +89,19 @@ public class TransportServer implements LifeCircle {
 			b.childHandler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline()
-							.addLast(new MessageEncoder(), new MessageDecoder(), new ServerHandler.ServerInHandler(),
-									new ServerHandler.ServerOutHandler());
+					ch.pipeline().addLast(new MessageEncoder(), new MessageDecoder(), inHandler,
+							new ServerHandler.ServerOutHandler());
 				}
 			});
 			f = b.bind(port).sync();
-			logger.info("start listen");
+			logger.info("start listen at {}", port);
 		} catch (Exception e) {
 			logger.error("server error", e);
 		}
+	}
+
+	public void setServerInHandler(ServerHandler.ServerInHandler inHandler) {
+		this.inHandler = inHandler;
+
 	}
 }

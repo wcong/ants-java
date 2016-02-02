@@ -7,8 +7,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.downloader.Request;
-import org.wcong.ants.downloader.Response;
+import org.wcong.ants.spider.Request;
+import org.wcong.ants.spider.Response;
 import org.wcong.ants.spider.Spider;
 
 import java.util.LinkedList;

@@ -1,6 +1,6 @@
 package org.wcong.ants.cluster;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * about node configure
@@ -8,28 +8,8 @@ import java.util.List;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/01/18
  */
-public interface NodeConfig {
+public interface NodeConfig extends LocalNodeConfig, RemoteNodeConfig, Serializable {
 
-	void load(String name);
-
-	List<String> getSpiderPackages();
-
-	void setSpiderPackages(List<String> spiderPackages);
-
-	void addSpiderPackage(String packageName);
-
-	void setTcpPort(int port);
-
-	int getTcpPort();
-
-	void setHttpPort(int port);
-
-	int getHttpPort();
-
-	int setMaster(String ip, int port);
-
-	String getMasterIp();
-
-	int getMasterPort();
+	boolean isLocalMaster();
 
 }

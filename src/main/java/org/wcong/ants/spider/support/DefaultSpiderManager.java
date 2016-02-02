@@ -2,8 +2,7 @@ package org.wcong.ants.spider.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wcong.ants.downloader.Request;
-import org.wcong.ants.downloader.Response;
+import org.wcong.ants.cluster.ClusterRequestBlockingQueue;
 import org.wcong.ants.spider.Spider;
 import org.wcong.ants.spider.SpiderManager;
 import org.wcong.ants.util.ClassScanner;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * manage spider
@@ -26,7 +24,7 @@ public class DefaultSpiderManager implements SpiderManager {
 
 	private Map<String, Spider> spiderMap = new HashMap<String, Spider>();
 
-	private BlockingQueue<Request> requests;
+	private ClusterRequestBlockingQueue requests;
 
 	public void loadSpider(List<String> spiderPackages) {
 		List<Class<Spider>> spiderClassList = ClassScanner
@@ -35,6 +33,7 @@ public class DefaultSpiderManager implements SpiderManager {
 			Spider spider = null;
 			try {
 				spider = spiderClass.newInstance();
+				spider.init();
 			} catch (Exception e) {
 				logger.error("new Spider error", e);
 			}
@@ -58,11 +57,10 @@ public class DefaultSpiderManager implements SpiderManager {
 			return;
 		}
 		logger.info("start spider {}", name);
-		spider.init();
-		requests.addAll(spider.getFirstRequests());
+		requests.addToCluster(null, spider.getFirstRequests());
 	}
 
-	public void setQueue(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
+	public void setClusterQueue(ClusterRequestBlockingQueue requests) {
 		this.requests = requests;
 	}
 }

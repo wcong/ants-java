@@ -14,13 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.Status;
 import org.wcong.ants.downloader.Downloader;
-import org.wcong.ants.downloader.Request;
-import org.wcong.ants.downloader.Response;
+import org.wcong.ants.spider.Request;
+import org.wcong.ants.spider.RequestBlockingQueue;
+import org.wcong.ants.spider.Response;
+import org.wcong.ants.spider.ResponseBlockingQueue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -37,15 +39,15 @@ public class DefaultDownloader implements Downloader {
 
 	private CloseableHttpClient httpClient = HttpClients.createDefault();
 
-	private BlockingQueue<Request> requests;
+	private RequestBlockingQueue requests;
 
-	private BlockingQueue<Response> responses;
+	private ResponseBlockingQueue responses;
 
 	private ExecutorService downloadThreadPool = Executors.newFixedThreadPool(16);
 
 	private volatile Status status = Status.NONE;
 
-	public void setQueue(BlockingQueue<Request> requests, BlockingQueue<Response> responses) {
+	public void setQueue(RequestBlockingQueue requests, ResponseBlockingQueue responses) {
 		this.requests = requests;
 		this.responses = responses;
 	}
@@ -89,7 +91,7 @@ public class DefaultDownloader implements Downloader {
 					logger.info("downloaded request {}", request);
 					Response response = makeResponse(request, httpResponse);
 					if (response != null) {
-						responses.add(response);
+						responses.addWaiting(Collections.singleton(response));
 						logger.info("push response to queue");
 					}
 				} catch (Exception e) {

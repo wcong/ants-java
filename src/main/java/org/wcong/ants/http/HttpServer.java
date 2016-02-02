@@ -13,13 +13,14 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.LifeCircle;
+import org.wcong.ants.aware.NodeAware;
 import org.wcong.ants.cluster.Node;
 
 /**
  * @author wcong<wc19920415@gmail.com>
  * @since 16/1/24
  */
-public class HttpServer implements LifeCircle {
+public class HttpServer implements LifeCircle, NodeAware {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpServer.class);
 

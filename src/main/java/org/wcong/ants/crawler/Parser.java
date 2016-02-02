@@ -4,7 +4,7 @@
  */
 package org.wcong.ants.crawler;
 
-import org.wcong.ants.downloader.Response;
+import org.wcong.ants.spider.Response;
 
 /**
  * a parser

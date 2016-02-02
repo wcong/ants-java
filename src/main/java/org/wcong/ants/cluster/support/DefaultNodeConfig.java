@@ -3,6 +3,7 @@ package org.wcong.ants.cluster.support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.cluster.NodeConfig;
+import org.wcong.ants.util.NetUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +20,21 @@ import java.util.Properties;
  */
 public class DefaultNodeConfig implements NodeConfig {
 
+	private static final long serialVersionUID = -2662189168892524496L;
+
 	private static Logger logger = LoggerFactory.getLogger(DefaultNodeConfig.class);
 
 	private List<String> spiderPackages = Collections.singletonList("org.wcong.ants.spiders");
+
+	private List<String> localhost = Arrays.asList("localhost", "127.0.0.1");
+
+	private String localIp = NetUtils.getLocalIp();
+
+	private String nodeName;
+
+	private String masterIp;
+
+	private int masterPort;
 
 	private int tcpPort = 8200;
 
@@ -51,18 +64,22 @@ public class DefaultNodeConfig implements NodeConfig {
 		if (httpPort != null) {
 			this.httpPort = Integer.valueOf(httpPort);
 		}
+		String masterName = properties.getProperty("master.node");
+		if (masterName != null) {
+			String[] masterInfo = masterName.split(":");
+			if (masterInfo.length == 2) {
+				int port = Integer.valueOf(masterInfo[1]);
+				masterIp = masterInfo[0];
+				if (localhost.contains(masterIp)) {
+					masterIp = localIp;
+				}
+				masterPort = port;
+			}
+		}
 	}
 
 	public List<String> getSpiderPackages() {
 		return spiderPackages;
-	}
-
-	public void setSpiderPackages(List<String> spiderPackages) {
-
-	}
-
-	public void addSpiderPackage(String packageName) {
-
 	}
 
 	public void setTcpPort(int port) {
@@ -81,15 +98,31 @@ public class DefaultNodeConfig implements NodeConfig {
 		return httpPort;
 	}
 
-	public int setMaster(String ip, int port) {
-		return 0;
+	public String getNodeName() {
+		if (nodeName == null) {
+			nodeName = localIp + ":" + tcpPort;
+		}
+		return nodeName;
+	}
+
+	public String getLocalIp() {
+		return localIp;
+	}
+
+	public void setMaster(String ip, int port) {
+		this.masterIp = ip;
+		this.masterPort = port;
 	}
 
 	public String getMasterIp() {
-		return null;
+		return masterIp;
 	}
 
 	public int getMasterPort() {
-		return 0;
+		return masterPort;
+	}
+
+	public boolean isLocalMaster() {
+		return localIp.equals(masterIp) && tcpPort == masterPort;
 	}
 }

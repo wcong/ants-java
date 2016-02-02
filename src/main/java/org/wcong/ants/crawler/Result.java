@@ -1,7 +1,7 @@
 package org.wcong.ants.crawler;
 
 import lombok.Data;
-import org.wcong.ants.downloader.Request;
+import org.wcong.ants.spider.Request;
 
 import java.util.List;
 

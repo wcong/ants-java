@@ -47,7 +47,9 @@ public abstract class HttpServerHandler {
 
 	protected void releaseContent(HttpContent content) {
 		ByteBuf buf = content.content();
-		logger.info(buf.toString(io.netty.util.CharsetUtil.UTF_8));
+		if (buf.readableBytes() > 0) {
+			logger.info("release buf {}", buf.toString(io.netty.util.CharsetUtil.UTF_8));
+		}
 		buf.release();
 	}
 

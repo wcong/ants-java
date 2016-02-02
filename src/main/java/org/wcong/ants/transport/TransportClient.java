@@ -21,6 +21,17 @@ public class TransportClient implements LifeCircle {
 
 	private ChannelFuture f;
 
+	private ClientHandler.ClientInHandler clientInHandler;
+
+	private String ip;
+
+	private int port;
+
+	public TransportClient(String ip, int port) {
+		this.ip = ip;
+		this.port = port;
+	}
+
 	public void run() {
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup);
@@ -30,11 +41,12 @@ public class TransportClient implements LifeCircle {
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline().addLast(new MessageDecoder(), new MessageEncoder(), new ClientHandler.ClientOutHandler(),
-						new ClientHandler.ClientInHandler());
+						clientInHandler);
 			}
 		});
 		try {
-			f = b.connect("localhost", 8200).sync();
+			f = b.connect(ip, port).sync();
+			logger.info("connect to {}:{}", ip, port);
 		} catch (InterruptedException e) {
 			logger.error("client error", e);
 		}
@@ -73,5 +85,9 @@ public class TransportClient implements LifeCircle {
 
 	public void destroy() {
 
+	}
+
+	public void setClientInHandler(ClientHandler.ClientInHandler clientInHandler) {
+		this.clientInHandler = clientInHandler;
 	}
 }

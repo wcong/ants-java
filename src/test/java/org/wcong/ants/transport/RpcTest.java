@@ -10,13 +10,6 @@ public class RpcTest {
 
 	@Test
 	public void test() throws InterruptedException {
-		final TransportClient client = new TransportClient();
-		final TransportServer server = new TransportServer();
-		server.run();
-		client.run();
-		client.getChannel().writeAndFlush("haha").sync();
-		TransportServer.getChannel("").writeAndFlush("hehe").sync();
-		Thread.sleep(1000);
 	}
 
 }

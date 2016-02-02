@@ -3,7 +3,6 @@ package org.wcong.ants.spider;
 import lombok.Data;
 import org.wcong.ants.crawler.CrawlerIntegrate;
 import org.wcong.ants.crawler.Parser;
-import org.wcong.ants.downloader.Request;
 
 import java.util.HashMap;
 import java.util.List;

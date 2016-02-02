@@ -22,12 +22,6 @@ public class HttpServerSpiderHandler extends HttpServerHandler {
 
 	private Logger logger = LoggerFactory.getLogger(HttpServerSpiderHandler.class);
 
-	private String handleUri;
-
-	public HttpServerSpiderHandler() {
-		handleUri = "/spider";
-	}
-
 	@Override
 	public void handleRequest(ChannelHandlerContext ctx, HttpRequest request, QueryStringDecoder query,
 			HttpContent content) {
@@ -55,6 +49,6 @@ public class HttpServerSpiderHandler extends HttpServerHandler {
 
 	@Override
 	public String getHandlerUri() {
-		return handleUri;
+		return "/spider";
 	}
 }
