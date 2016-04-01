@@ -1,7 +1,3 @@
-/**
- * Copyright 2014-2015, NetEase, Inc. All Rights Reserved.
- * Date: 15/12/24
- */
 package org.wcong.ants.crawler;
 
 import org.wcong.ants.spider.Response;

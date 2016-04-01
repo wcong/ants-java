@@ -17,7 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author hzwangcong<hzwangcong@corp.netease.com>
+ * spider for zhi hu
+ * @author wcong<wc19920415@gmail.com>
  * @since 16/2/2
  */
 public class ZhiHuSpider extends Spider {
@@ -59,7 +60,6 @@ public class ZhiHuSpider extends Spider {
 				request.setUrl("https://www.zhihu.com" + a.attr("href"));
 				request.setSpiderName(response.getRequest().getSpiderName());
 				request.setParseName("answer");
-
 			}
 			Result result = new Result();
 			result.setRequestList(requestList);
