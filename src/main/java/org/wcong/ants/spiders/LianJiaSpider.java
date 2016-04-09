@@ -14,6 +14,7 @@ import org.wcong.ants.util.RegexUtil;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,29 +52,28 @@ public class LianJiaSpider extends Spider {
 			}
 			Document document = response.getDocument();
 			Elements liList = document.select(".clinch-list li");
-			List<HouseData> houseDataList = new ArrayList<HouseData>(liList.size());
+			List<Map<String, Object>> houseDataList = new ArrayList<Map<String, Object>>(liList.size());
 			for (Element li : liList) {
-				HouseData houseData = new HouseData();
+				Map<String, Object> houseData = new HashMap<String, Object>();
 				houseDataList.add(houseData);
-				houseData.setImageUrl(li.select(".pic-panel a img").attr("src"));
+				houseData.put("imageUrl", li.select(".pic-panel a img").attr("src"));
 				Elements infoPanel = li.select(".info-panel");
-				houseData.setHouseTitle(infoPanel.select("h2 a").text());
+				houseData.put("houseTitle", infoPanel.select("h2 a").text());
 				String otherText = infoPanel.select(".other .con").text();
-				houseData.setOther(otherText);
+				houseData.put("other", otherText);
 				Elements detailType = infoPanel.select(".dealType .fl");
-				houseData.setClosingTime(detailType.get(0).select(".div-cun").text());
+				houseData.put("closingTime", detailType.get(0).select(".div-cun").text());
 				String unitPrice = detailType.get(1).select(".div-cun").text();
 				Matcher unitPriceMatcher = RegexUtil.INT_NUMBER_PATTERN.matcher(unitPrice);
 				if (unitPriceMatcher.find()) {
-					houseData.setUnitPrice(Integer.parseInt(unitPriceMatcher.group()));
+					houseData.put("unitPrice", Integer.parseInt(unitPriceMatcher.group()));
 				}
 				String totalPrice = infoPanel.select(".dealType .fr").select(".div-cun").first().text();
 				Matcher totalPriceMatcher = RegexUtil.FLOAT_NUMBER_PATTERN.matcher(totalPrice);
 				if (totalPriceMatcher.find()) {
-					houseData.setTotalPrice(new BigDecimal(totalPriceMatcher.group()));
+					houseData.put("totalPrice", new BigDecimal(totalPriceMatcher.group()));
 				}
 			}
-			System.out.println(houseDataList);
 			String pageData = document.select(".page-box").attr("page-data");
 			Map<String, Object> pageMap = JsonUtils.parseJsonMap(pageData);
 			int totalPage = (Integer) pageMap.get("totalPage");
@@ -87,6 +87,12 @@ public class LianJiaSpider extends Spider {
 				requestList.add(request);
 				result.setRequestList(requestList);
 			}
+			List<Result.Data> dataList = new LinkedList<Result.Data>();
+			result.setDataList(dataList);
+			Result.Data data = new Result.Data();
+			dataList.add(data);
+			data.setIndex("house");
+			data.setData(houseDataList);
 			return result;
 		}
 	}

@@ -16,11 +16,16 @@ public class Ants {
 		if (args.length > 1) {
 			parseArgs(args, nodeConfig);
 		}
-		Node node = new DefaultNode();
+		final Node node = new DefaultNode();
 		node.setNodeConfig(nodeConfig);
 		node.init();
 		node.start();
 		node.stop();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				node.destroy();
+			}
+		});
 	}
 
 	private static void parseArgs(String[] args, NodeConfig nodeConfig) {
@@ -32,6 +37,8 @@ public class Ants {
 				nodeConfig.setTcpPort(Integer.valueOf(args[index + 1]));
 			} else if (args[index].equals("-http")) {
 				nodeConfig.setHttpPort(Integer.valueOf(args[index + 1]));
+			} else if (args[index].equals("-data")) {
+				nodeConfig.setDataPath(args[index + 1]);
 			}
 		}
 	}

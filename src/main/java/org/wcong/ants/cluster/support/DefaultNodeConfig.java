@@ -40,6 +40,8 @@ public class DefaultNodeConfig implements NodeConfig {
 
 	private int httpPort = 8300;
 
+	private String dataPath = "./data";
+
 	public void load(String name) {
 
 		InputStream inputStream = DefaultNodeConfig.class.getClassLoader().getResourceAsStream("ants.properties");
@@ -76,6 +78,10 @@ public class DefaultNodeConfig implements NodeConfig {
 				masterPort = port;
 			}
 		}
+		String dataPath = properties.getProperty("data.path");
+		if (dataPath != null) {
+			this.dataPath = dataPath;
+		}
 	}
 
 	public List<String> getSpiderPackages() {
@@ -107,6 +113,14 @@ public class DefaultNodeConfig implements NodeConfig {
 
 	public String getLocalIp() {
 		return localIp;
+	}
+
+	public void setDataPath(String dataPath) {
+		this.dataPath = dataPath;
+	}
+
+	public String getDataPath() {
+		return dataPath;
 	}
 
 	public void setMaster(String ip, int port) {

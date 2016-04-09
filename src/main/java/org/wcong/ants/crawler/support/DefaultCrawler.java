@@ -7,6 +7,7 @@ import org.wcong.ants.cluster.ClusterRequestBlockingQueue;
 import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
+import org.wcong.ants.index.DocumentWriter;
 import org.wcong.ants.spider.Request;
 import org.wcong.ants.spider.RequestBlockingQueue;
 import org.wcong.ants.spider.Response;
@@ -33,6 +34,8 @@ public class DefaultCrawler implements Crawler {
 	private ResponseBlockingQueue responses;
 
 	private ExecutorService crawlThreadPool = Executors.newFixedThreadPool(16);
+
+	private DocumentWriter documentWriter;
 
 	private volatile Status status = Status.NONE;
 
@@ -62,15 +65,27 @@ public class DefaultCrawler implements Crawler {
 				try {
 					Result result = parser.parse(response);
 					logger.info("crawled response");
-					if (result != null && result.getRequestList() != null) {
-						logger.info("push request to queue {}", result.getRequestList());
-						clusterRequests.addToCluster(response.getRequest(), result.getRequestList());
+					if (result != null) {
+						if (result.getDataList() != null) {
+							logger.info("get result", result.getDataList());
+							for (Result.Data data : result.getDataList()) {
+								documentWriter.writeDocument(request.getSpiderName(), data.getIndex(), data.getData());
+							}
+						}
+						if (result.getRequestList() != null) {
+							logger.info("push request to queue {}", result.getRequestList());
+							clusterRequests.addToCluster(response.getRequest(), result.getRequestList());
+						}
 					}
 				} catch (Exception e) {
 					logger.error("crawl exception for response", e);
 				}
 			}
 		});
+	}
+
+	public void setDocumentWriter(DocumentWriter documentWriter) {
+		this.documentWriter = documentWriter;
 	}
 
 	public void run() {
@@ -89,7 +104,6 @@ public class DefaultCrawler implements Crawler {
 	}
 
 	public void init() {
-
 	}
 
 	public void start() {

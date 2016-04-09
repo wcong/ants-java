@@ -4,6 +4,7 @@ import org.wcong.ants.LifeCircle;
 import org.wcong.ants.aware.ClusterQueueAware;
 import org.wcong.ants.aware.QueueAware;
 import org.wcong.ants.aware.SpiderManagerAware;
+import org.wcong.ants.index.DocumentWriter;
 import org.wcong.ants.spider.Response;
 
 /**
@@ -15,5 +16,7 @@ import org.wcong.ants.spider.Response;
 public interface Crawler extends LifeCircle, QueueAware, SpiderManagerAware, ClusterQueueAware {
 
 	void crawl(Response response);
+
+	void setDocumentWriter(DocumentWriter docunemtWriter);
 
 }

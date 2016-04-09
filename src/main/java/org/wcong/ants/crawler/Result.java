@@ -4,6 +4,7 @@ import lombok.Data;
 import org.wcong.ants.spider.Request;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * crawler result
@@ -15,5 +16,15 @@ import java.util.List;
 public class Result {
 
 	private List<Request> requestList;
+
+	private List<Data> dataList;
+
+	@lombok.Data
+	public static class Data {
+
+		private String index;
+
+		private List<Map<String, Object>> data;
+	}
 
 }

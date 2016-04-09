@@ -26,4 +26,8 @@ public interface LocalNodeConfig {
 
 	String getLocalIp();
 
+	void setDataPath(String dataPath);
+
+	String getDataPath();
+
 }
