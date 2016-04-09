@@ -37,6 +37,9 @@ public class DouBanSpider extends Spider {
 		return requests;
 	}
 
+	/**
+	 * init parseMap
+	 */
 	public void init() {
 		parserMap.put(DEFAULT_PARSE_NAME, new DefaultParser());
 	}

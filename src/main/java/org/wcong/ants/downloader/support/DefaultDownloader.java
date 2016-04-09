@@ -10,6 +10,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.Status;
@@ -21,6 +22,7 @@ import org.wcong.ants.spider.ResponseBlockingQueue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -103,10 +105,11 @@ public class DefaultDownloader implements Downloader {
 
 	private Response makeResponse(Request request, CloseableHttpResponse httpResponse) throws IOException {
 		HttpEntity entity = httpResponse.getEntity();
-		String content = EntityUtils.toString(entity);
+		String content = EntityUtils.toString(entity,Charset.defaultCharset());
 		httpResponse.close();
 		Response response = new Response();
-		response.setDocument(Jsoup.parse(content, request.getUrl()));
+		Document document = Jsoup.parse(content, request.getUrl());
+		response.setDocument(document);
 		response.setRequest(request);
 		return response;
 	}

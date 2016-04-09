@@ -7,7 +7,12 @@ import org.wcong.ants.cluster.ClusterRequestBlockingQueue;
 import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.spider.*;
+import org.wcong.ants.spider.Request;
+import org.wcong.ants.spider.RequestBlockingQueue;
+import org.wcong.ants.spider.Response;
+import org.wcong.ants.spider.ResponseBlockingQueue;
+import org.wcong.ants.spider.Spider;
+import org.wcong.ants.spider.SpiderManager;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,11 +59,15 @@ public class DefaultCrawler implements Crawler {
 		logger.info("start to crawl response");
 		crawlThreadPool.submit(new Runnable() {
 			public void run() {
-				Result result = parser.parse(response);
-				logger.info("crawled response");
-				if (result != null && result.getRequestList() != null) {
-					logger.info("push request to queue {}", result.getRequestList());
-					clusterRequests.addToCluster(response.getRequest(), result.getRequestList());
+				try {
+					Result result = parser.parse(response);
+					logger.info("crawled response");
+					if (result != null && result.getRequestList() != null) {
+						logger.info("push request to queue {}", result.getRequestList());
+						clusterRequests.addToCluster(response.getRequest(), result.getRequestList());
+					}
+				} catch (Exception e) {
+					logger.error("crawl exception for response", e);
 				}
 			}
 		});

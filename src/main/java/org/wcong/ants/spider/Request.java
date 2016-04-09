@@ -24,6 +24,22 @@ public class Request implements Serializable {
 
 	public static String METHOD_DELETE = "DELETE";
 
+	/**
+	 * a basic spider mainly for first request
+	 *
+	 * @param url        crawl url
+	 * @param spiderName spider of request
+	 * @param parseName  parser name for response
+	 * @return Request basic request
+	 */
+	public static Request basicRequest(String url, String spiderName, String parseName) {
+		Request request = new Request();
+		request.setUrl(url);
+		request.setSpiderName(spiderName);
+		request.setParseName(parseName);
+		return request;
+	}
+
 	private String id;
 
 	private String url;
