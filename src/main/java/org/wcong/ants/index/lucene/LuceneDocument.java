@@ -2,6 +2,9 @@ package org.wcong.ants.index.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexWriter;
+
+import java.io.IOException;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -26,5 +29,7 @@ public abstract class LuceneDocument {
 	public void setRootPath(String rootPath) {
 		this.rootPath = rootPath;
 	}
+
+	public abstract IndexWriter getIndexWriter(String path) throws IOException;
 
 }

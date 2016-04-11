@@ -59,7 +59,7 @@ public class LuceneDocumentWriter extends LuceneDocument implements DocumentWrit
 		return true;
 	}
 
-	private IndexWriter getIndexWriter(String path) throws IOException {
+	public IndexWriter getIndexWriter(String path) throws IOException {
 		IndexWriter indexWriter = indexWriterPool.get(path);
 		if (indexWriter != null) {
 			return indexWriter;
