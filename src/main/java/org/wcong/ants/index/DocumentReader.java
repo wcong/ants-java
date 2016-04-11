@@ -1,5 +1,7 @@
 package org.wcong.ants.index;
 
+import org.wcong.ants.LifeCircle;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +12,8 @@ import java.util.Map;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/4/1
  */
-public interface DocumentReader extends DocumentPath {
+public interface DocumentReader extends LifeCircle,DocumentPath {
 
-	List<Map<String, Object>> search(String spider, String index, String field, String value) throws IOException;
+	Documents search(String spider, String index, String field, String value) throws IOException;
 
 }

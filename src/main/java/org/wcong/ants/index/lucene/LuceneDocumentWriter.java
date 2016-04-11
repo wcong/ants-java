@@ -100,9 +100,11 @@ public class LuceneDocumentWriter extends LuceneDocument implements DocumentWrit
 	}
 
 	public void destroy() {
-		for (IndexWriter indexWriter : indexWriterPool.values()) {
+		for (Map.Entry<String,IndexWriter> entry : indexWriterPool.entrySet()) {
 			try {
-				indexWriter.close();
+				logger.info("close index writer"+entry.getKey());
+				entry.getValue().close();
+				entry.getValue().getDirectory().close();
 			} catch (IOException e) {
 				logger.error("close index writer error", e);
 			}
