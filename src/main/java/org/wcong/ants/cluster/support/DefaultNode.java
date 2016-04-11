@@ -3,7 +3,11 @@ package org.wcong.ants.cluster.support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.LifeCircle;
-import org.wcong.ants.cluster.*;
+import org.wcong.ants.cluster.Cluster;
+import org.wcong.ants.cluster.ClusterRequestBlockingQueue;
+import org.wcong.ants.cluster.Distributer;
+import org.wcong.ants.cluster.Node;
+import org.wcong.ants.cluster.NodeConfig;
 import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.support.DefaultCrawler;
 import org.wcong.ants.downloader.Downloader;
@@ -35,141 +39,141 @@ import java.util.List;
  */
 public class DefaultNode implements Node {
 
-    private static Logger logger = LoggerFactory.getLogger(DefaultNode.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultNode.class);
 
-    private NodeConfig nodeConfig;
+	private NodeConfig nodeConfig;
 
-    private HttpServer httpServer = new HttpServer();
+	private HttpServer httpServer = new HttpServer();
 
-    private SpiderManager spiderManager = new DefaultSpiderManager();
+	private SpiderManager spiderManager = new DefaultSpiderManager();
 
-    private Crawler crawler = new DefaultCrawler();
+	private Crawler crawler = new DefaultCrawler();
 
-    private Downloader downloader = new DefaultDownloader();
+	private Downloader downloader = new DefaultDownloader();
 
-    private TransportClient transportClient;
+	private TransportClient transportClient;
 
-    private TransportServer transportServer = new TransportServer();
+	private TransportServer transportServer = new TransportServer();
 
-    private Distributer distributer = new DefaultDistributer();
+	private Distributer distributer = new DefaultDistributer();
 
-    private List<LifeCircle> lifeCircleList = new LinkedList<LifeCircle>();
+	private List<LifeCircle> lifeCircleList = new LinkedList<LifeCircle>();
 
-    private Cluster cluster = new DefaultCluster();
+	private Cluster cluster = new DefaultCluster();
 
-    public void setNodeConfig(NodeConfig nodeConfig) {
-        this.nodeConfig = nodeConfig;
-    }
+	public void setNodeConfig(NodeConfig nodeConfig) {
+		this.nodeConfig = nodeConfig;
+	}
 
-    public SpiderManager getSpiderManager() {
-        return spiderManager;
-    }
+	public SpiderManager getSpiderManager() {
+		return spiderManager;
+	}
 
-    public String getName() {
-        return nodeConfig.getNodeName();
-    }
+	public String getName() {
+		return nodeConfig.getNodeName();
+	}
 
-    public Cluster getCluster() {
-        return cluster;
-    }
+	public Cluster getCluster() {
+		return cluster;
+	}
 
-    public void init() {
+	public void init() {
 
-        DocumentWriter documentWriter = new LuceneDocumentWriter();
-        documentWriter.setRootPath(nodeConfig.getDataPath());
-        lifeCircleList.add(documentWriter);
+		DocumentWriter documentWriter = new LuceneDocumentWriter();
+		documentWriter.setRootPath(nodeConfig.getDataPath());
+		lifeCircleList.add(documentWriter);
 
-        DocumentReader documentReader = new LuceneDocumentReader();
-        documentReader.setRootPath(nodeConfig.getDataPath());
-        ((LuceneDocumentReader) documentReader).setLuceneDocumentWriter((LuceneDocumentWriter) documentWriter);
-        lifeCircleList.add(documentReader);
+		DocumentReader documentReader = new LuceneDocumentReader();
+		documentReader.setRootPath(nodeConfig.getDataPath());
+		((LuceneDocumentReader) documentReader).setLuceneDocumentWriter((LuceneDocumentWriter) documentWriter);
+		lifeCircleList.add(documentReader);
 
-        ClusterRequestBlockingQueue clusterRequestQueue = new ClusterLinkedBlockingDeque();
-        RequestBlockingQueue localRequestQueue = new LinkedRequestBlockingQueue();
-        ResponseBlockingQueue localResponseQueue = new LinkedResponseBlockingQueue();
+		ClusterRequestBlockingQueue clusterRequestQueue = new ClusterLinkedBlockingDeque();
+		RequestBlockingQueue localRequestQueue = new LinkedRequestBlockingQueue();
+		ResponseBlockingQueue localResponseQueue = new LinkedResponseBlockingQueue();
 
-        clusterRequestQueue.setCluster(cluster);
-        clusterRequestQueue.setQueue(localRequestQueue, localResponseQueue);
+		clusterRequestQueue.setCluster(cluster);
+		clusterRequestQueue.setQueue(localRequestQueue, localResponseQueue);
 
-        cluster.setClusterQueue(clusterRequestQueue);
-        cluster.setLocalNode(nodeConfig);
+		cluster.setClusterQueue(clusterRequestQueue);
+		cluster.setLocalNode(nodeConfig);
 
-        spiderManager.loadSpider(nodeConfig.getSpiderPackages());
-        spiderManager.setClusterQueue(clusterRequestQueue);
+		spiderManager.loadSpider(nodeConfig.getSpiderPackages());
+		spiderManager.setClusterQueue(clusterRequestQueue);
 
-        crawler.setQueue(localRequestQueue, localResponseQueue);
-        crawler.setSpiderManager(spiderManager);
-        crawler.setClusterQueue(clusterRequestQueue);
-        crawler.setDocumentWriter(documentWriter);
+		crawler.setQueue(localRequestQueue, localResponseQueue);
+		crawler.setSpiderManager(spiderManager);
+		crawler.setClusterQueue(clusterRequestQueue);
+		crawler.setDocumentWriter(documentWriter);
 
-        downloader.setQueue(localRequestQueue, localResponseQueue);
+		downloader.setQueue(localRequestQueue, localResponseQueue);
 
-        httpServer.setNode(this);
-        httpServer.setPort(nodeConfig.getHttpPort());
+		httpServer.setNode(this);
+		httpServer.setPort(nodeConfig.getHttpPort());
 
-        distributer.setCluster(cluster);
-        distributer.setClusterQueue(clusterRequestQueue);
+		distributer.setCluster(cluster);
+		distributer.setClusterQueue(clusterRequestQueue);
 
-        ServerHandler.ServerInHandler inHandler = new ServerHandler.ServerInHandler();
-        inHandler.setCluster(cluster);
-        inHandler.setClusterQueue(clusterRequestQueue);
-        transportServer.setServerInHandler(inHandler);
-        transportServer.setPort(nodeConfig.getTcpPort());
+		ServerHandler.ServerInHandler inHandler = new ServerHandler.ServerInHandler();
+		inHandler.setCluster(cluster);
+		inHandler.setClusterQueue(clusterRequestQueue);
+		transportServer.setServerInHandler(inHandler);
+		transportServer.setPort(nodeConfig.getTcpPort());
 
-        if (!nodeConfig.isLocalMaster()) {
-            transportClient = new TransportClient(nodeConfig.getMasterIp(), nodeConfig.getMasterPort());
-            ClientHandler.ClientInHandler clientInHandler = new ClientHandler.ClientInHandler();
-            clientInHandler.setCluster(cluster);
-            clientInHandler.setQueue(localRequestQueue, localResponseQueue);
-            transportClient.setClientInHandler(clientInHandler);
+		if (!nodeConfig.isLocalMaster()) {
+			transportClient = new TransportClient(nodeConfig.getMasterIp(), nodeConfig.getMasterPort());
+			ClientHandler.ClientInHandler clientInHandler = new ClientHandler.ClientInHandler();
+			clientInHandler.setCluster(cluster);
+			clientInHandler.setQueue(localRequestQueue, localResponseQueue);
+			transportClient.setClientInHandler(clientInHandler);
 
-        }
-        clusterRequestQueue.setTransportClient(transportClient);
+		}
+		clusterRequestQueue.setTransportClient(transportClient);
 
-    }
+	}
 
-    public void start() {
-        httpServer.start();
-        new Thread(new Runnable() {
-            public void run() {
-                crawler.start();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            public void run() {
-                downloader.start();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            public void run() {
-                distributer.start();
-            }
-        }).start();
-        transportServer.start();
-        if (transportClient != null) {
-            transportClient.start();
-        }
-    }
+	public void start() {
+		httpServer.start();
+		new Thread(new Runnable() {
+			public void run() {
+				crawler.start();
+			}
+		}).start();
+		new Thread(new Runnable() {
+			public void run() {
+				downloader.start();
+			}
+		}).start();
+		new Thread(new Runnable() {
+			public void run() {
+				distributer.start();
+			}
+		}).start();
+		transportServer.start();
+		if (transportClient != null) {
+			transportClient.start();
+		}
+	}
 
-    public void pause() {
+	public void pause() {
 
-    }
+	}
 
-    public void resume() {
+	public void resume() {
 
-    }
+	}
 
-    public void stop() {
-        httpServer.stop();
-        crawler.stop();
-        downloader.stop();
-        transportServer.stop();
-        transportClient.stop();
-    }
+	public void stop() {
+		httpServer.stop();
+		crawler.stop();
+		downloader.stop();
+		transportServer.stop();
+		transportClient.stop();
+	}
 
-    public void destroy() {
-        for (LifeCircle lifeCircle : lifeCircleList) {
-            lifeCircle.destroy();
-        }
-    }
+	public void destroy() {
+		for (LifeCircle lifeCircle : lifeCircleList) {
+			lifeCircle.destroy();
+		}
+	}
 }
