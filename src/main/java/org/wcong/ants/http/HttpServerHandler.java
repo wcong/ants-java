@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Values.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -55,7 +56,7 @@ public abstract class HttpServerHandler {
 
 	protected void sendResponse(ChannelHandlerContext ctx, HttpRequest request, byte[] data) {
 		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(data));
-		response.headers().set(CONTENT_TYPE, "text/plain");
+		response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
 		response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
 		if (HttpHeaders.isKeepAlive(request)) {
 			response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);

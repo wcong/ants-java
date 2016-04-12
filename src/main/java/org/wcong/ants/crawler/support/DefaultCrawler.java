@@ -67,7 +67,7 @@ public class DefaultCrawler implements Crawler {
 					logger.info("crawled response");
 					if (result != null) {
 						if (result.getDataList() != null) {
-							logger.info("get result", result.getDataList());
+							logger.info("get result {}", result.getDataList());
 							for (Result.Data data : result.getDataList()) {
 								documentWriter.writeDocument(request.getSpiderName(), data.getIndex(), data.getData());
 							}
