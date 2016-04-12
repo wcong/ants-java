@@ -22,12 +22,20 @@ public abstract class LuceneDocument {
 		return rootPath + "/" + spider + JOIN_SIGN + name;
 	}
 
+	public String[] splitPath(String path) {
+		return path.split(JOIN_SIGN);
+	}
+
 	public void setAnalyzer(Analyzer analyzer) {
 		this.analyzer = analyzer;
 	}
 
 	public void setRootPath(String rootPath) {
 		this.rootPath = rootPath;
+	}
+
+	public String getRootPath() {
+		return rootPath;
 	}
 
 	public abstract IndexWriter getIndexWriter(String path) throws IOException;

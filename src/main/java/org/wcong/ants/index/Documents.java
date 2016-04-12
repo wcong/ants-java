@@ -12,12 +12,16 @@ import java.util.Map;
 @Data
 public class Documents {
 
-    private long total;
+	private long total;
 
-    private int pageNo;
+	private int pageNo;
 
-    private int pageSize;
+	private int pageSize;
 
-    private List<Map<String,Object>> dataList;
+	private String searchField;
+
+	private String searchQuery;
+
+	private List<Map<String, Object>> dataList;
 
 }

@@ -16,16 +16,19 @@ import org.wcong.ants.LifeCircle;
 import org.wcong.ants.aware.DocumentReaderAware;
 import org.wcong.ants.aware.NodeAware;
 import org.wcong.ants.cluster.Node;
+import org.wcong.ants.index.DocumentReader;
 
 /**
  * @author wcong<wc19920415@gmail.com>
  * @since 16/1/24
  */
-public class HttpServer implements LifeCircle, NodeAware,DocumentReaderAware {
+public class HttpServer implements LifeCircle, NodeAware, DocumentReaderAware {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
 	private Node node;
+
+	private DocumentReader documentReader;
 
 	private int port = 8300;
 
@@ -33,7 +36,7 @@ public class HttpServer implements LifeCircle, NodeAware,DocumentReaderAware {
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-	private ChannelFuture f;
+	private ChannelFuture channelFuture;
 
 	public void setPort(int port) {
 		this.port = port;
@@ -52,6 +55,7 @@ public class HttpServer implements LifeCircle, NodeAware,DocumentReaderAware {
 		ServerBootstrap b = new ServerBootstrap();
 		final HttpServerInboundHandler httpServerInboundHandler = new HttpServerInboundHandler();
 		httpServerInboundHandler.setNode(node);
+		httpServerInboundHandler.setDocumentReader(documentReader);
 		b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
@@ -65,7 +69,7 @@ public class HttpServer implements LifeCircle, NodeAware,DocumentReaderAware {
 				}).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 		try {
 			logger.info("start http at port {}", port);
-			f = b.bind(port).sync();
+			channelFuture = b.bind(port).sync();
 		} catch (Exception e) {
 			logger.error("get error", e);
 		}
@@ -81,7 +85,7 @@ public class HttpServer implements LifeCircle, NodeAware,DocumentReaderAware {
 
 	public void stop() {
 		try {
-			f.channel().closeFuture().sync();
+			channelFuture.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			logger.error("close error", e);
 		} finally {
@@ -94,4 +98,7 @@ public class HttpServer implements LifeCircle, NodeAware,DocumentReaderAware {
 
 	}
 
+	public void setDocumentReader(DocumentReader documentReader) {
+		this.documentReader = documentReader;
+	}
 }

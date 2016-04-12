@@ -110,6 +110,7 @@ public class DefaultNode implements Node {
 
 		httpServer.setNode(this);
 		httpServer.setPort(nodeConfig.getHttpPort());
+		httpServer.setDocumentReader(documentReader);
 
 		distributer.setCluster(cluster);
 		distributer.setClusterQueue(clusterRequestQueue);

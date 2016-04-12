@@ -8,7 +8,10 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wcong.ants.aware.DocumentReaderAware;
+import org.wcong.ants.aware.NodeAware;
 import org.wcong.ants.cluster.Node;
+import org.wcong.ants.index.DocumentReader;
 import org.wcong.ants.util.ClassScanner;
 
 import java.util.HashMap;
@@ -20,11 +23,13 @@ import java.util.Map;
  * @since 16/1/24
  */
 @ChannelHandler.Sharable
-public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
+public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter implements NodeAware, DocumentReaderAware {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpServerInboundHandler.class);
 
 	private Node node;
+
+	private DocumentReader documentReader;
 
 	private Map<String, HttpServerHandler> handlerMap = new HashMap<String, HttpServerHandler>();
 
@@ -82,5 +87,14 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		logger.error("error caught", cause);
 		ctx.close();
+	}
+
+	public void setDocumentReader(DocumentReader documentReader) {
+		this.documentReader = documentReader;
+		for (HttpServerHandler handler : handlerMap.values()) {
+			if (handler instanceof DocumentReaderAware) {
+				((DocumentReaderAware) handler).setDocumentReader(documentReader);
+			}
+		}
 	}
 }

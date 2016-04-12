@@ -8,4 +8,6 @@ package org.wcong.ants.index;
  */
 public interface DocumentPath {
 	void setRootPath(String rootPath);
+
+	String getRootPath();
 }

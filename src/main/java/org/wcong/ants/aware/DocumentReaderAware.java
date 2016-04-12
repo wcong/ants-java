@@ -1,5 +1,7 @@
 package org.wcong.ants.aware;
 
+import org.wcong.ants.index.DocumentReader;
+
 /**
  * set document reader
  *
@@ -7,4 +9,7 @@ package org.wcong.ants.aware;
  * @since 16/4/11
  */
 public interface DocumentReaderAware {
+
+	void setDocumentReader(DocumentReader documentReader);
+
 }
