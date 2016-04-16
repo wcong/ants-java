@@ -16,7 +16,7 @@ import org.wcong.ants.LifeCircle;
 import org.wcong.ants.aware.DocumentReaderAware;
 import org.wcong.ants.aware.NodeAware;
 import org.wcong.ants.cluster.Node;
-import org.wcong.ants.index.DocumentReader;
+import org.wcong.ants.document.DocumentReader;
 
 /**
  * @author wcong<wc19920415@gmail.com>

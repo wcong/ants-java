@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.wcong.ants.aware.DocumentReaderAware;
 import org.wcong.ants.aware.NodeAware;
 import org.wcong.ants.cluster.Node;
-import org.wcong.ants.index.DocumentReader;
+import org.wcong.ants.document.DocumentReader;
 import org.wcong.ants.util.ClassScanner;
 
 import java.util.HashMap;

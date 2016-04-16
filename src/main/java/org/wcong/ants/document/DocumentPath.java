@@ -1,4 +1,4 @@
-package org.wcong.ants.index;
+package org.wcong.ants.document;
 
 /**
  * set document path

@@ -4,7 +4,7 @@ import org.wcong.ants.LifeCircle;
 import org.wcong.ants.aware.ClusterQueueAware;
 import org.wcong.ants.aware.QueueAware;
 import org.wcong.ants.aware.SpiderManagerAware;
-import org.wcong.ants.index.DocumentWriter;
+import org.wcong.ants.document.DocumentWriter;
 import org.wcong.ants.spider.Response;
 
 /**

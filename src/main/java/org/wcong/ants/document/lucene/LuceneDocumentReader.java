@@ -1,4 +1,4 @@
-package org.wcong.ants.index.lucene;
+package org.wcong.ants.document.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -12,8 +12,8 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wcong.ants.index.DocumentReader;
-import org.wcong.ants.index.Documents;
+import org.wcong.ants.document.DocumentReader;
+import org.wcong.ants.document.Documents;
 
 import java.io.File;
 import java.io.IOException;

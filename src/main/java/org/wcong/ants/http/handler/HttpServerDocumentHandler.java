@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.aware.DocumentReaderAware;
 import org.wcong.ants.http.HttpServerHandler;
-import org.wcong.ants.index.DocumentReader;
-import org.wcong.ants.index.Documents;
+import org.wcong.ants.document.DocumentReader;
+import org.wcong.ants.document.Documents;
 
 import java.io.IOException;
 import java.util.List;

@@ -7,7 +7,7 @@ import org.wcong.ants.cluster.ClusterRequestBlockingQueue;
 import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.index.DocumentWriter;
+import org.wcong.ants.document.DocumentWriter;
 import org.wcong.ants.spider.Request;
 import org.wcong.ants.spider.RequestBlockingQueue;
 import org.wcong.ants.spider.Response;

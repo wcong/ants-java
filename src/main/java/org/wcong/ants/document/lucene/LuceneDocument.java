@@ -1,4 +1,4 @@
-package org.wcong.ants.index.lucene;
+package org.wcong.ants.document.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;

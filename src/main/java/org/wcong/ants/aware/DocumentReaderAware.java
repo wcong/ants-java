@@ -1,6 +1,6 @@
 package org.wcong.ants.aware;
 
-import org.wcong.ants.index.DocumentReader;
+import org.wcong.ants.document.DocumentReader;
 
 /**
  * set document reader

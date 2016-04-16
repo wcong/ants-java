@@ -1,4 +1,4 @@
-package org.wcong.ants.index.lucene;
+package org.wcong.ants.document.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -8,7 +8,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wcong.ants.index.DocumentWriter;
+import org.wcong.ants.document.DocumentWriter;
 
 import java.io.IOException;
 import java.nio.file.Paths;
