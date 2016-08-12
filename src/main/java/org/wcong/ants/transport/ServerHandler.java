@@ -40,7 +40,9 @@ public class ServerHandler {
 					clusterRequestQueue.addToCluster(crawlResult.getOriginRequest(), crawlResult.getNewRequests());
 					break;
 				case TransportMessage.TYPE_CONFIG:
-					cluster.addNodeConfig((NodeConfig) transportMessage.getObject());
+					NodeConfig nodeConfig = (NodeConfig) transportMessage.getObject();
+					TransportServer.addChannel(nodeConfig.getNodeName(),ctx);
+					cluster.addNodeConfig(nodeConfig);
 					break;
 				}
 			} else {
@@ -51,11 +53,6 @@ public class ServerHandler {
 		@Override
 		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 			logger.error("get error", cause);
-		}
-
-		@Override
-		public void channelActive(ChannelHandlerContext ctx) {
-			TransportServer.addChannel(ctx.channel());
 		}
 
 		public void setCluster(Cluster cluster) {

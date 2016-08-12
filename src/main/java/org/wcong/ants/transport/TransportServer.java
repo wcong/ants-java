@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.LifeCircle;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * a rpc server
  *
@@ -30,18 +33,38 @@ public class TransportServer implements LifeCircle {
 
 	private ServerHandler.ServerInHandler inHandler;
 
-	private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	private static Map<String,ChannelHandlerContext> ctxMap = new HashMap<String, ChannelHandlerContext>();
 
-	public static void addChannel(Channel channel) {
-		channelGroup.add(channel);
+	private static Map<String,ChannelPromise> promiseMap = new HashMap<String, ChannelPromise>();
+
+	private static Map<String,Object> dataMap = new HashMap<String, Object>();
+
+	public static void addChannel(String name,ChannelHandlerContext channel) {
+		ctxMap.put(name, channel);
 	}
 
-	public static void removeChannel(Channel channel) {
-		channelGroup.remove(channel);
+	public static ChannelPromise channelPromise(String name){
+		return promiseMap.get(name);
+	}
+
+	public static void removeChannel(String name) {
+		ctxMap.remove(name);
 	}
 
 	public static Channel getChannel(String name) {
-		return channelGroup.iterator().next();
+		return ctxMap.get(name).channel();
+	}
+
+	public static <T> T getSyncResponse(String name,String message,T t) throws InterruptedException {
+		ChannelPromise channelPromise = promiseMap.get(name);
+		if( channelPromise != null ){
+			channelPromise.await();
+		}
+		Channel channel = ctxMap.get(name).channel();
+		channelPromise = channel.writeAndFlush(message).channel().newPromise();
+		promiseMap.put(name,channelPromise);
+		channelPromise.await();
+		return (T) dataMap.get(name);
 	}
 
 	private ChannelFuture f;

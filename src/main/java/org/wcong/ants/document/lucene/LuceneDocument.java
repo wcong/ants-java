@@ -3,6 +3,8 @@ package org.wcong.ants.document.lucene;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.lionsoul.jcseg.analyzer.v5x.JcsegAnalyzer5X;
+import org.lionsoul.jcseg.tokenizer.core.JcsegTaskConfig;
 
 import java.io.IOException;
 
@@ -12,7 +14,7 @@ import java.io.IOException;
  */
 public abstract class LuceneDocument {
 
-	protected Analyzer analyzer = new StandardAnalyzer();
+	protected Analyzer analyzer =  new JcsegAnalyzer5X(JcsegTaskConfig.COMPLEX_MODE);
 
 	private String rootPath;
 
