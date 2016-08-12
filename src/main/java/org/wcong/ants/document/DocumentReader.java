@@ -16,6 +16,8 @@ public interface DocumentReader extends LifeCircle, DocumentPath {
 
 	Documents search(String spider, String index, String field, String value) throws IOException;
 
+	DocumentTerms sumTerms(String spider, String index)throws IOException;
+
 	Map<String, List<String>> readDocuments();
 
 }

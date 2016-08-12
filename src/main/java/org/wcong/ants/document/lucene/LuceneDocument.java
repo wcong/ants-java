@@ -13,8 +13,12 @@ import java.io.IOException;
  * @since 16/4/1
  */
 public abstract class LuceneDocument {
+	JcsegTaskConfig jcsegTaskConfig = new JcsegTaskConfig();
+	{
+		jcsegTaskConfig.setClearStopwords(true);
+	}
 
-	protected Analyzer analyzer =  new JcsegAnalyzer5X(JcsegTaskConfig.COMPLEX_MODE);
+	protected Analyzer analyzer =  new JcsegAnalyzer5X(JcsegTaskConfig.COMPLEX_MODE,jcsegTaskConfig);
 
 	private String rootPath;
 

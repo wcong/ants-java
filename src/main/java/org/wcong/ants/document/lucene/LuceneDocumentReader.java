@@ -1,28 +1,39 @@
 package org.wcong.ants.document.lucene;
 
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Fields;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.document.DocumentReader;
+import org.wcong.ants.document.DocumentTerms;
 import org.wcong.ants.document.Documents;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -34,7 +45,9 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
 
 	private LuceneDocumentWriter luceneDocumentWriter;
 
-	private Map<String, IndexSearcher> searcherPool = new HashMap<String, IndexSearcher>(10);
+	private final Map<String, IndexSearcher> searcherPool = new HashMap<String, IndexSearcher>(10);
+
+	private final Map<String,IndexReader> readerPool = new HashMap<String, IndexReader>(10);
 
 	public Documents search(String spider, String index, String field, String value) throws IOException {
 		String path = makeIndexPath(spider, index);
@@ -67,7 +80,41 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
 		return documents;
 	}
 
-	public Map<String, List<String>> readDocuments() {
+    public DocumentTerms sumTerms(String spider, String index) throws IOException {
+        IndexReader indexReader = getIndexReader(makeIndexPath(spider, index));
+        DocumentTerms documentTerms = new DocumentTerms();
+        List<DocumentTerms.DocumentTerm> documentTermList = new LinkedList<DocumentTerms.DocumentTerm>();
+        documentTerms.setTerms(documentTermList);
+        Set<String> termSet = new HashSet<String>();
+        Fields fields =  MultiFields.getFields(indexReader);
+        for( String field : fields ){
+            Terms terms = fields.terms(field);
+            TermsEnum termsEnum = terms.iterator();
+            BytesRef bytesRef;
+            while ((bytesRef=termsEnum.next()) != null){
+                DocumentTerms.DocumentTerm documentTerm = new DocumentTerms.DocumentTerm();
+                String termName = bytesRef.utf8ToString();
+                if( termSet.contains(termName) ){
+                    continue;
+                }
+                TokenStream tokenStream=analyzer.tokenStream(field,termName);
+                tokenStream.incrementToken();
+                termSet.add(termName);
+                documentTermList.add(documentTerm);
+                documentTerm.setTerm(termName);
+                documentTerm.setDocCount(termsEnum.docFreq());
+                documentTerm.setTermCount(termsEnum.totalTermFreq());
+            }
+        }
+        Collections.sort(documentTermList, new Comparator<DocumentTerms.DocumentTerm>() {
+            public int compare(DocumentTerms.DocumentTerm o1, DocumentTerms.DocumentTerm o2) {
+                return (int)(o2.getTermCount() - o1.getTermCount());
+            }
+        });
+        return documentTerms;
+    }
+
+    public Map<String, List<String>> readDocuments() {
 		String rootPath = getRootPath();
 		File rootFile = new File(rootPath);
 		File[] files = rootFile.listFiles();
@@ -95,7 +142,7 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
 		if (indexSearcher != null) {
 			return indexSearcher;
 		} else {
-			synchronized (this) {
+			synchronized (searcherPool) {
 				indexSearcher = searcherPool.get(path);
 				if (indexSearcher != null) {
 					return indexSearcher;
@@ -108,9 +155,25 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
 				}
 			}
 		}
-
 	}
 
+	private IndexReader getIndexReader(String path) throws IOException{
+		IndexReader indexReader = readerPool.get(path);
+        if( indexReader != null ){
+            return indexReader;
+        }
+        synchronized (readerPool){
+            indexReader = readerPool.get(path);
+            if( indexReader != null ){
+                return indexReader;
+            }else{
+                IndexWriter indexWriter = getIndexWriter(path);
+                DirectoryReader iReader = DirectoryReader.open(indexWriter, false);
+                readerPool.put(path, iReader);
+                return iReader;
+            }
+        }
+	}
 	public void setLuceneDocumentWriter(LuceneDocumentWriter luceneDocumentWriter) {
 		this.luceneDocumentWriter = luceneDocumentWriter;
 	}
