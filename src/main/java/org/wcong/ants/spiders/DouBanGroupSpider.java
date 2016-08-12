@@ -53,7 +53,9 @@ public class DouBanGroupSpider extends Spider {
             Elements nextPage = article.select(".paginator .next a");
             if (nextPage != null) {
                 String href = nextPage.attr("href");
-                requestList.add(Request.basicRequest("https://www.douban.com/group/explore" + href, response.getRequest().getSpiderName(), DEFAULT_PARSE_NAME));
+                if (href != null && href.length() > 0) {
+                    requestList.add(Request.basicRequest("https://www.douban.com/group/explore" + href, response.getRequest().getSpiderName(), DEFAULT_PARSE_NAME));
+                }
             }
             Result result = new Result();
             result.setRequestList(requestList);
