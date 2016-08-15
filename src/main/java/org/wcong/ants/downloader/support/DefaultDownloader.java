@@ -108,8 +108,7 @@ public class DefaultDownloader implements Downloader {
 		String content = EntityUtils.toString(entity,Charset.defaultCharset());
 		httpResponse.close();
 		Response response = new Response();
-		Document document = Jsoup.parse(content, request.getUrl());
-		response.setDocument(document);
+		response.setBody(content);
 		response.setRequest(request);
 		return response;
 	}

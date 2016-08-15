@@ -1,6 +1,7 @@
 package org.wcong.ants.spiders;
 
 import lombok.Data;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -50,7 +51,7 @@ public class LianJiaSpider extends Spider {
 			if (response == null) {
 				return null;
 			}
-			Document document = response.getDocument();
+			Document document = Jsoup.parse(response.getBody(),response.getRequest().getUrl());
 			Elements liList = document.select(".clinch-list li");
 			List<Map<String, Object>> houseDataList = new ArrayList<Map<String, Object>>(liList.size());
 			for (Element li : liList) {

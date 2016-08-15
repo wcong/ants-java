@@ -4,6 +4,7 @@
  */
 package org.wcong.ants.spiders;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -50,7 +51,7 @@ public class ZhiHuSpider extends Spider {
 			if (response == null) {
 				return null;
 			}
-			Document document = response.getDocument();
+			Document document = Jsoup.parse(response.getBody(),response.getRequest().getUrl());
 			List<Request> requestList = new LinkedList<Request>();
 			Elements aList = document.select(".explore-feed .question_link");
 			for (Element a : aList) {
@@ -73,7 +74,7 @@ public class ZhiHuSpider extends Spider {
 			if (response == null) {
 				return null;
 			}
-			Document document = response.getDocument();
+			Document document = Jsoup.parse(response.getBody(),response.getRequest().getUrl());
 			Elements divList = document.select("#zh-question-detail .zm-editable-content");
 			System.out.println(divList.text());
 			return null;

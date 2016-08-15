@@ -24,9 +24,9 @@ public class Response implements Serializable {
 	private String id;
 
 	/**
-	 * jsoup document
+	 * response body
 	 */
-	private Document document;
+	private String body;
 
 	/**
 	 * source for response

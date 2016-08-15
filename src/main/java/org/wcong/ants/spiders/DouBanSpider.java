@@ -1,5 +1,6 @@
 package org.wcong.ants.spiders;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
@@ -50,7 +51,7 @@ public class DouBanSpider extends Spider {
 			if (response == null) {
 				return null;
 			}
-			Document document = response.getDocument();
+			Document document = Jsoup.parse(response.getBody(),response.getRequest().getUrl());
 			Elements liList = document.select(".screening-bd .ui-slide-content .ui-slide-item");
 			for (Element li : liList) {
 				Attributes attributes = li.attributes();
