@@ -14,9 +14,12 @@ import org.wcong.ants.cluster.Node;
 import org.wcong.ants.document.DocumentReader;
 import org.wcong.ants.util.ClassScanner;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -26,6 +29,10 @@ import java.util.Map;
 public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter implements NodeAware, DocumentReaderAware {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpServerInboundHandler.class);
+
+	private static Set<String> STATIC_FILE_PREFIX = new HashSet<String>(Arrays.asList("html","js","css","jpg"));
+
+    private HttpStaticFileServerHandler httpStaticFileServerHandler = new HttpStaticFileServerHandler();
 
 	private Node node;
 
@@ -67,6 +74,10 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter imple
 			logger.info("Uri:" + uri);
 		}
 		if (msg instanceof HttpContent) {
+            if( isStaticFile(request.getUri()) ){
+                httpStaticFileServerHandler.channelRead(ctx,request);
+                return;
+            }
 			QueryStringDecoder query = new QueryStringDecoder(request.getUri());
 			HttpServerHandler handler = handlerMap.get(query.path());
 			HttpContent httpContent = (HttpContent) msg;
@@ -77,6 +88,13 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter imple
 			}
 		}
 	}
+
+    private boolean isStaticFile(String uri){
+        String[] urlArray = uri.split("\\?");
+        int lastIndex = urlArray[0].lastIndexOf(".");
+        String fileType = urlArray[0].substring(lastIndex+1);
+        return STATIC_FILE_PREFIX.contains(fileType);
+    }
 
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {

@@ -97,8 +97,6 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
                 if( termSet.contains(termName) ){
                     continue;
                 }
-                TokenStream tokenStream=analyzer.tokenStream(field,termName);
-                tokenStream.incrementToken();
                 termSet.add(termName);
                 documentTermList.add(documentTerm);
                 documentTerm.setTerm(termName);

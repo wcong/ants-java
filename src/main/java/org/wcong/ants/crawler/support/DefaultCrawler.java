@@ -39,6 +39,8 @@ public class DefaultCrawler implements Crawler {
 
 	private volatile Status status = Status.NONE;
 
+	private int sleep = 1000;
+
 	public void crawl(final Response response) {
 		if (response == null) {
 			logger.warn("null parameter");
@@ -93,6 +95,7 @@ public class DefaultCrawler implements Crawler {
 		try {
 			Response response;
 			while (status == Status.RUNNING) {
+				Thread.sleep(sleep);
 				if ((response = responses.poll(1, TimeUnit.SECONDS)) != null) {
 					crawl(response);
 				}
