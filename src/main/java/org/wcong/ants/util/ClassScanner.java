@@ -48,10 +48,9 @@ public class ClassScanner {
 	 * @return class list
 	 */
 	public static <T> List<Class<T>> scanPackage(Class<T> spiderType, String packageName) {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		Enumeration<URL> urls = null;
 		try {
-			urls = classLoader.getResources(packageName.replace(PKG_SEPARATOR, DIR_SEPARATOR));
+			urls = ClassLoader.getSystemClassLoader().getResources(packageName.replace(PKG_SEPARATOR, DIR_SEPARATOR));
 		} catch (IOException e) {
 			logger.error("get urls error", e);
 		}
