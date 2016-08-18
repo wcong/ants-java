@@ -41,9 +41,9 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter imple
 	private Map<String, HttpServerHandler> handlerMap = new HashMap<String, HttpServerHandler>();
 
 	{
-		List<Class<HttpServerHandler>> handlerClassList = ClassScanner
+		List<Class<? extends HttpServerHandler>> handlerClassList = ClassScanner
 				.scanPackage(HttpServerHandler.class, "org.wcong.ants.http.handler");
-		for (Class<HttpServerHandler> handlerClass : handlerClassList) {
+		for (Class<? extends HttpServerHandler> handlerClass : handlerClassList) {
 			HttpServerHandler handler = null;
 			try {
 				handler = handlerClass.newInstance();

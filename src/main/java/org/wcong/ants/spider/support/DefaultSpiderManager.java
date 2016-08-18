@@ -27,9 +27,9 @@ public class DefaultSpiderManager implements SpiderManager {
 	private ClusterRequestBlockingQueue requests;
 
 	public void loadSpider(List<String> spiderPackages) {
-		List<Class<Spider>> spiderClassList = ClassScanner
+		List<Class<? extends Spider>> spiderClassList = ClassScanner
 				.scanPackages(Spider.class, spiderPackages.toArray(new String[spiderPackages.size()]));
-		for (Class<Spider> spiderClass : spiderClassList) {
+		for (Class<? extends Spider> spiderClass : spiderClassList) {
 			Spider spider = null;
 			try {
 				spider = spiderClass.newInstance();
