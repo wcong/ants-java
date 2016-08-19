@@ -49,6 +49,8 @@ public class DefaultDownloader implements Downloader {
 
 	private volatile Status status = Status.NONE;
 
+	public static int SLEEP = 1000;
+
 	public void setQueue(RequestBlockingQueue requests, ResponseBlockingQueue responses) {
 		this.requests = requests;
 		this.responses = responses;
@@ -136,6 +138,7 @@ public class DefaultDownloader implements Downloader {
 		Request request;
 		try {
 			while (status == Status.RUNNING) {
+				Thread.sleep(SLEEP);
 				if ((request = requests.poll(1, TimeUnit.SECONDS)) != null) {
 					download(request);
 				}

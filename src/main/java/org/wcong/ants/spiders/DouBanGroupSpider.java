@@ -43,7 +43,7 @@ public class DouBanGroupSpider extends Spider {
     public static class ListParser implements Parser {
 
         public Result parse(Response response) {
-            Document document = Jsoup.parse(response.getBody(),response.getRequest().getUrl());
+            Document document = Jsoup.parse(response.getBody(), response.getRequest().getUrl());
             Elements article = document.select(".article");
             Elements h3List = article.select(".channel-item div h3 a");
             List<Request> requestList = new ArrayList<Request>(h3List.size());
@@ -67,10 +67,14 @@ public class DouBanGroupSpider extends Spider {
     public static class ArticleParser implements Parser {
 
         public Result parse(Response response) {
-            String articleContent = Jsoup.parse(response.getBody(),response.getRequest().getUrl()).select(".article").text();
+            Document document = Jsoup.parse(response.getBody(), response.getRequest().getUrl());
+            String title = document.select("#content h1").text();
+            String articleContent = document.select(".article").text();
             List<Map<String, Object>> articleList = new LinkedList<Map<String, Object>>();
             Map<String, Object> article = new HashMap<String, Object>();
             article.put("article", articleContent);
+            article.put("title", title);
+            article.put("path", response.getRequest().getUrl());
             articleList.add(article);
             Result result = new Result();
             List<Result.Data> dataList = new ArrayList<Result.Data>(1);

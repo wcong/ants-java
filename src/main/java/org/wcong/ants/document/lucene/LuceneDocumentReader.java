@@ -1,6 +1,5 @@
 package org.wcong.ants.document.lucene;
 
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Fields;
@@ -81,13 +80,20 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
 	}
 
     public DocumentTerms sumTerms(String spider, String index) throws IOException {
-        IndexReader indexReader = getIndexReader(makeIndexPath(spider, index));
-        DocumentTerms documentTerms = new DocumentTerms();
-        List<DocumentTerms.DocumentTerm> documentTermList = new LinkedList<DocumentTerms.DocumentTerm>();
-        documentTerms.setTerms(documentTermList);
-        Set<String> termSet = new HashSet<String>();
-        Fields fields =  MultiFields.getFields(indexReader);
-        for( String field : fields ){
+		return sumTermsForField(spider, index, null);
+    }
+
+	private DocumentTerms sumTermsForField(String spider, String index, String sumField) throws IOException {
+		IndexReader indexReader = getIndexReader(makeIndexPath(spider, index));
+		DocumentTerms documentTerms = new DocumentTerms();
+		List<DocumentTerms.DocumentTerm> documentTermList = new LinkedList<DocumentTerms.DocumentTerm>();
+		documentTerms.setTerms(documentTermList);
+		Set<String> termSet = new HashSet<String>();
+		Fields fields =  MultiFields.getFields(indexReader);
+		for( String field : fields ){
+			if( sumField != null && !sumField.equals(field) ){
+				continue;
+			}
             Terms terms = fields.terms(field);
             TermsEnum termsEnum = terms.iterator();
             BytesRef bytesRef;
@@ -104,15 +110,19 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
                 documentTerm.setTermCount(termsEnum.totalTermFreq());
             }
         }
-        Collections.sort(documentTermList, new Comparator<DocumentTerms.DocumentTerm>() {
+		Collections.sort(documentTermList, new Comparator<DocumentTerms.DocumentTerm>() {
             public int compare(DocumentTerms.DocumentTerm o1, DocumentTerms.DocumentTerm o2) {
                 return (int)(o2.getTermCount() - o1.getTermCount());
             }
         });
-        return documentTerms;
-    }
+		return documentTerms;
+	}
 
-    public Map<String, List<String>> readDocuments() {
+	public DocumentTerms sumTerms(String spider, String index, String field) throws IOException {
+		return sumTermsForField(spider, index, field);
+	}
+
+	public Map<String, List<String>> readDocuments() {
 		String rootPath = getRootPath();
 		File rootFile = new File(rootPath);
 		File[] files = rootFile.listFiles();

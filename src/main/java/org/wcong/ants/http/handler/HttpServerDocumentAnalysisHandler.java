@@ -34,6 +34,7 @@ public class HttpServerDocumentAnalysisHandler extends HttpServerHandler impleme
         try {
             String spider = null;
             String index = null;
+            String field = null;
             Map<String, List<String>> parameterMap = query.parameters();
             List<String> spiderList = parameterMap.get("spider");
             if (spiderList != null && !spiderList.isEmpty()) {
@@ -43,8 +44,12 @@ public class HttpServerDocumentAnalysisHandler extends HttpServerHandler impleme
             if (indexList != null && !indexList.isEmpty()) {
                 index = indexList.get(0);
             }
+            List<String> fieldList = parameterMap.get("field");
+            if (fieldList != null && !fieldList.isEmpty()) {
+                field = fieldList.get(0);
+            }
             if (spider != null && index != null) {
-                DocumentTerms documentTerms = documentReader.sumTerms(spider, index);
+                DocumentTerms documentTerms = documentReader.sumTerms(spider, index, field);
                 data = objectMapper.writeValueAsBytes(documentTerms);
             }
         } catch (IOException e) {
