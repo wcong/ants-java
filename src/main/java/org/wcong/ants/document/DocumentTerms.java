@@ -20,6 +20,11 @@ public class DocumentTerms {
         private int docCount;
 
         private long termCount;
+
+	    // how do we calculate weight,simple tf/idf
+	    // tf :frequency in document / all term in document
+	    // idf:all document / frequency for document
+        private double weight;
     }
 
 }
