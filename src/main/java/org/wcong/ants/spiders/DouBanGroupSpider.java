@@ -69,7 +69,7 @@ public class DouBanGroupSpider extends Spider {
         public Result parse(Response response) {
             Document document = Jsoup.parse(response.getBody(), response.getRequest().getUrl());
             String title = document.select("#content h1").text();
-            String articleContent = document.select(".article").text();
+            String articleContent = document.select(".article #link-report").text();
             List<Map<String, Object>> articleList = new LinkedList<Map<String, Object>>();
             Map<String, Object> article = new HashMap<String, Object>();
             article.put("article", articleContent);
