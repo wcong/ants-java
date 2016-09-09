@@ -106,14 +106,12 @@ public class LuceneDocumentReader extends LuceneDocument implements DocumentRead
                 termSet.add(termName);
                 documentTermList.add(documentTerm);
                 documentTerm.setTerm(termName);
-                documentTerm.setDocCount(termsEnum.docFreq());
-                documentTerm.setTermCount(termsEnum.totalTermFreq());
-	            documentTerm.setWeight(documentTerm.getTermCount()*indexReader.numDocs()/(documentTerm.getDocCount()*documentTerm.getDocCount()));
+                documentTerm.setCount(termsEnum.totalTermFreq());
             }
         }
 		Collections.sort(documentTermList, new Comparator<DocumentTerms.DocumentTerm>() {
             public int compare(DocumentTerms.DocumentTerm o1, DocumentTerms.DocumentTerm o2) {
-                return (int)(o2.getWeight() - o1.getWeight());
+                return (int)(o2.getCount() - o1.getCount());
             }
         });
 		return documentTerms;

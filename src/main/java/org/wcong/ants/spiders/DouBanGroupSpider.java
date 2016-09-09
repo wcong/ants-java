@@ -9,6 +9,8 @@ import org.wcong.ants.crawler.Result;
 import org.wcong.ants.spider.Request;
 import org.wcong.ants.spider.Response;
 import org.wcong.ants.spider.Spider;
+import org.wcong.ants.util.ListUtil;
+import org.wcong.ants.util.TextRankKeywordsUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +77,8 @@ public class DouBanGroupSpider extends Spider {
             article.put("article", articleContent);
             article.put("title", title);
             article.put("path", response.getRequest().getUrl());
+            List<String> keywordList = TextRankKeywordsUtil.keywords(articleContent);
+            article.put("keyword", ListUtil.join(keywordList," "));
             articleList.add(article);
             Result result = new Result();
             List<Result.Data> dataList = new ArrayList<Result.Data>(1);
