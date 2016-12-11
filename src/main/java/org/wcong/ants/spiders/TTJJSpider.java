@@ -52,9 +52,6 @@ public class TTJJSpider extends Spider {
 
     public TTJJSpider() {
         super("TTJJ");
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String date = simpleDateFormat.format(new Date());
-        CURRENT_URL_FORMAT = URL_FORMAT.replace("%DATE", date);
     }
 
     public void init() {
@@ -64,6 +61,10 @@ public class TTJJSpider extends Spider {
 
     public List<Request> getFirstRequests() {
         List<Request> requestList = new ArrayList<Request>();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String date = simpleDateFormat.format(new Date());
+        CURRENT_URL_FORMAT = URL_FORMAT.replace("%DATE", date);
         String url = CURRENT_URL_FORMAT.replace("%PI", "1");
         requestList.add(Request.basicRequest(url, name, DEFAULT_PARSE_NAME));
         return requestList;
