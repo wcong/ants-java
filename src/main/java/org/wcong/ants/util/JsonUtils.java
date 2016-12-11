@@ -4,6 +4,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +23,16 @@ public class JsonUtils {
 			e.printStackTrace();
 		}
 		return Collections.emptyMap();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<Object> parseJsonList(String jsonString){
+		try {
+			return objectMapper.readValue(jsonString, List.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
 	}
 
 }
