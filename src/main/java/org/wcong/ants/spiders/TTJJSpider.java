@@ -1,5 +1,6 @@
 package org.wcong.ants.spiders;
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,12 +126,14 @@ public class TTJJSpider extends Spider {
                     }
                     String yieldSql = "select * from tb_yield where code=" + code + " and yield_date=\"" + yield + "\"";
                     resultSet = statement.executeQuery(yieldSql);
-                    if (!resultSet.next()) {
+                    if (!resultSet.next() && yield.length()>0) {
                         yieldSql = "insert into tb_yield(code,yield_date,yield)values(" + code + ",\"" + date + "\"," + yield + ")";
                         statement.executeUpdate(yieldSql);
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                }catch(MySQLIntegrityConstraintViolationException exception){
+
+                }catch (SQLException e) {
+                    logger.error("something wrong",e);
                 } finally {
                     if (connection != null) {
                         try {
