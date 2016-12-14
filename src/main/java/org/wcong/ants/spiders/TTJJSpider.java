@@ -31,7 +31,7 @@ public class TTJJSpider extends Spider {
 
     private static String CURRENT_URL_FORMAT = null;
 
-    private static BasicDataSource basicDataSource = new BasicDataSource();
+    public static BasicDataSource basicDataSource = new BasicDataSource();
 
     static {
         basicDataSource.setDriverClassName("com.mysql.jdbc.Driver");

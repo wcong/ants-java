@@ -13,7 +13,6 @@ import java.io.Serializable;
  * @since 15/12/20
  */
 @Data()
-@ToString(exclude = "document")
 public class Response implements Serializable {
 
 	private static final long serialVersionUID = 5182729341404049314L;
