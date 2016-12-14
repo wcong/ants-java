@@ -114,20 +114,20 @@ public class TTJJSpider extends Spider {
                 String abbreviate = itemArray[2];
                 String date = itemArray[3];
                 String yield = itemArray[6];
-                String fondSql = "select * from tb_fundation where code=" + code;
+                String fondSql = "select * from tb_fundation where code=\"" + code+"\"";
                 Connection connection = null;
                 try {
                     connection = basicDataSource.getConnection();
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(fondSql);
                     if (!resultSet.next()) {
-                        fondSql = "insert into tb_fundation(code,name,abbreviate)values(" + code + ",\"" + name + "\",\"" + abbreviate + "\")";
+                        fondSql = "insert into tb_fundation(code,name,abbreviate)values(\"" + code + "\",\"" + name + "\",\"" + abbreviate + "\")";
                         statement.executeUpdate(fondSql);
                     }
-                    String yieldSql = "select * from tb_yield where code=" + code + " and yield_date=\"" + yield + "\"";
+                    String yieldSql = "select * from tb_yield where code=\"" + code + "\" and yield_date=\"" + yield + "\"";
                     resultSet = statement.executeQuery(yieldSql);
                     if (!resultSet.next() && yield.length()>0) {
-                        yieldSql = "insert into tb_yield(code,yield_date,yield)values(" + code + ",\"" + date + "\"," + yield + ")";
+                        yieldSql = "insert into tb_yield(code,yield_date,yield)values(\"" + code + "\",\"" + date + "\"," + yield + ")";
                         statement.executeUpdate(yieldSql);
                     }
                 }catch(MySQLIntegrityConstraintViolationException exception){
