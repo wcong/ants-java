@@ -37,11 +37,11 @@ public class ClusterLinkedBlockingDeque implements ClusterRequestBlockingQueue {
 
 	private TransportClient transportClient;
 
-	private LinkedBlockingDeque<Request> waitingQueue = new LinkedBlockingDeque<Request>();
+	private LinkedBlockingDeque<Request> waitingQueue = new LinkedBlockingDeque<>();
 
-	private LinkedBlockingDeque<Request> downloadedQueue = new LinkedBlockingDeque<Request>();
+	private LinkedBlockingDeque<Request> downloadedQueue = new LinkedBlockingDeque<>();
 
-	private Map<String, Request> crawlingRequest = new ConcurrentHashMap<String, Request>();
+	private Map<String, Request> crawlingRequest = new ConcurrentHashMap<>();
 
 	public Request poll(long timeout, TimeUnit unit) throws InterruptedException {
 		Request request = waitingQueue.poll(timeout, unit);
@@ -115,6 +115,10 @@ public class ClusterLinkedBlockingDeque implements ClusterRequestBlockingQueue {
 
 	public boolean addDownloaded(Collection<? extends Request> c) {
 		removeDownloaded(c);
+		// TODO much more
+		if( downloadedQueue.size() > 100 ) {
+			downloadedQueue.clear();
+		}
 		return downloadedQueue.addAll(c);
 	}
 
