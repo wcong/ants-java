@@ -20,7 +20,7 @@
         </encoder>
     </appender>
 
-    <appender name="CONTROLLER_ERROR_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="ERROR_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_DIR}/ants_error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}/ants_error.log.%d{yyyy-MM-dd}</fileNamePattern>
