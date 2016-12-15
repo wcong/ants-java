@@ -5,9 +5,9 @@
 #-------------------------------------------------------------------------------------------------------------
 #JAVA_HOME="/usr/java/jdk1.6.0_31"
 JAVA_OPTS="-Duser.timezone=GMT+8 -server"
-APP_LOG=/code/ants-java
+APP_LOG=/code/ants-java/bin
 APP_HOME=/code/ants-java
-APP_MAIN=org.wcong.ants.Ant
+APP_MAIN=org.wcong.ants.Ants
 CLASSPATH=.
 for tradePortalJar in "$APP_HOME"/libs/*.jar;
 do
