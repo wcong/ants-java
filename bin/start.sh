@@ -17,7 +17,7 @@ done
 tradePortalPID=0
 
 getTradeProtalPID(){
-    javaps=`$JAVA_HOME/bin/jps -l | grep $APP_MAIN`
+    javaps=`jps -l | grep $APP_MAIN`
     if [ -n "$javaps" ]; then
         tradePortalPID=`echo $javaps | awk '{print $1}'`
     else
