@@ -93,6 +93,7 @@ public class TTJJFullSpider extends Spider {
                     Elements tdList = element.select("td");
                     if( tdList.size() < 3 ){
                         logger.error("parse wrong"+tdList);
+                        continue;
                     }
                     String date = tdList.get(0).text();
                     String benefit = tdList.get(1).text();
@@ -125,6 +126,7 @@ public class TTJJFullSpider extends Spider {
                     Elements tdList = element.select("td");
                     if( tdList.size() < 4 ){
                         logger.error("parse wrong"+tdList);
+                        continue;
                     }
                     String date = tdList.get(0).text();
                     String value = tdList.get(1).text();
