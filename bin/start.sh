@@ -4,7 +4,7 @@
 #该脚本可在服务器上的任意目录下执行,不会影响到日志的输出位置等
 #-------------------------------------------------------------------------------------------------------------
 #JAVA_HOME="/usr/java/jdk1.6.0_31"
-JAVA_OPTS="-Duser.timezone=GMT+8 -server"
+JAVA_OPTS="-Duser.timezone=GMT+8 -server -Xms448m -Xmx448m"
 APP_LOG=/code/ants-java/bin
 APP_HOME=/code/ants-java
 APP_MAIN=org.wcong.ants.Ants
