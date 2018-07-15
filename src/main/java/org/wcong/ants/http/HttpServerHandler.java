@@ -1,21 +1,18 @@
 package org.wcong.ants.http;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.cluster.Node;
+import reactor.core.publisher.Mono;
+import reactor.netty.NettyOutbound;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
-import static io.netty.handler.codec.http.HttpHeaders.Values.*;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 
 /**
  * about node
@@ -25,43 +22,34 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public abstract class HttpServerHandler {
 
-	private static Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
-	protected ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
-	{
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		objectMapper.setDateFormat(df);
+    protected Node node;
 
-	}
+    public void setNode(Node node) {
+        this.node = node;
+    }
 
-	protected Node node;
+    public abstract NettyOutbound handleRequest(HttpServerRequest request, HttpServerResponse response);
 
-	public void setNode(Node node) {
-		this.node = node;
-	}
+    public abstract boolean test(HttpServerRequest request);
 
-	public abstract void handleRequest(ChannelHandlerContext ctx, HttpRequest request, QueryStringDecoder query,
-			HttpContent content);
+    protected NettyOutbound sendResponse(HttpServerResponse response, Object data) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("send response" + response.toString() + data.toString());
+        }
+        byte[] bytes = null;
+        try {
+            bytes = objectMapper.writeValueAsBytes(data);
+        } catch (IOException e) {
+            logger.error("encode error", e);
+        }
 
-	public abstract String getHandlerUri();
-
-	protected void releaseContent(HttpContent content) {
-		ByteBuf buf = content.content();
-		if (buf.readableBytes() > 0) {
-			logger.info("release buf {}", buf.toString(io.netty.util.CharsetUtil.UTF_8));
-		}
-		buf.release();
-	}
-
-	protected void sendResponse(ChannelHandlerContext ctx, HttpRequest request, byte[] data) {
-		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(data));
-		response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
-		response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-		if (HttpHeaders.isKeepAlive(request)) {
-			response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-		}
-		ctx.write(response);
-		ctx.flush();
-	}
+        bytes = bytes == null ? new byte[0] : bytes;
+        response.header(CONTENT_TYPE, "application/json; charset=UTF-8");
+        response.header(CONTENT_LENGTH, String.valueOf(bytes.length));
+        return response.sendByteArray(Mono.just(bytes));
+    }
 }

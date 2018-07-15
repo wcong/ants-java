@@ -1,7 +1,5 @@
 package org.wcong.ants.cluster;
 
-import org.wcong.ants.aware.ClusterQueueAware;
-
 import java.util.Collection;
 
 /**
@@ -14,26 +12,26 @@ import java.util.Collection;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/01/30
  */
-public interface Cluster extends ClusterQueueAware {
+public interface Cluster {
 
-	Collection<NodeConfig> getNodeConfigs();
+    Collection<NodeConfig> getNodeConfigs();
 
-	void addNodeConfig(NodeConfig nodeConfig);
+    void addNodeConfig(NodeConfig nodeConfig);
 
-	void removeNodeConfig(NodeConfig nodeConfig);
+    void removeNodeConfig(NodeConfig nodeConfig);
 
-	boolean contains(String nodeName);
+    boolean contains(String nodeName);
 
-	ClusterRequestBlockingQueue getClusterBlockingQueue();
+    ClusterRequestBlockingQueue getClusterBlockingQueue();
 
-	NodeConfig getMasterNode();
+    NodeConfig getMasterNode();
 
-	void setMasterNode(NodeConfig masterNode);
+    void setMasterNode(NodeConfig masterNode);
 
-	NodeConfig getLocalNode();
+    NodeConfig getLocalNode();
 
-	void setLocalNode(NodeConfig localNode);
+    void setLocalNode(NodeConfig localNode);
 
-	boolean isLocalMaster();
+    boolean isLocalMaster();
 
 }

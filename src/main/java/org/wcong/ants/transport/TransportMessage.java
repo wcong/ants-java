@@ -7,6 +7,7 @@ import org.wcong.ants.transport.message.CrawlResult;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * message for transport
@@ -17,40 +18,45 @@ import java.util.Collection;
 @Data
 public class TransportMessage implements Serializable {
 
-	public static final int TYPE_REQUEST = 1;
+    public static final int TYPE_REQUEST = 1;
 
-	public static final int TYPE_CONFIG = 2;
+    public static final int TYPE_CONFIG = 2;
 
-	public static final int TYPE_RESULT = 3;
+    public static final int TYPE_RESULT = 3;
 
-	private static final long serialVersionUID = 3696768612990766904L;
+    private static final long serialVersionUID = 3696768612990766904L;
 
-	private String nodeName;
+    private String nodeName;
 
-	private int type;
+    private int type;
 
-	private Object object;
+    private List<? extends Request> requestList;
 
-	public static TransportMessage newRequestMessage(String nodeName, Collection<? extends Request> requestList) {
+    private CrawlResult crawlResult;
 
-		return new TransportMessage(nodeName, TYPE_REQUEST, requestList);
-	}
+    private NodeConfig nodeConfig;
 
-	public static TransportMessage newRequestMessage(String nodeName, CrawlResult crawlResult) {
-		return new TransportMessage(nodeName, TYPE_RESULT, crawlResult);
-	}
+    public static TransportMessage newRequestMessage(String nodeName, List<? extends Request> requestList) {
+        TransportMessage message = new TransportMessage();
+        message.setNodeName(nodeName);
+        message.setType(TYPE_REQUEST);
+        message.setRequestList(requestList);
+        return message;
+    }
 
-	public static TransportMessage newRequestMessage(String nodeName, NodeConfig nodeConfig) {
-		return new TransportMessage(nodeName, TYPE_CONFIG, nodeConfig);
-	}
+    public static TransportMessage newRequestMessage(String nodeName, CrawlResult crawlResult) {
+        TransportMessage message = new TransportMessage();
+        message.setNodeName(nodeName);
+        message.setType(TYPE_REQUEST);
+        message.setCrawlResult(crawlResult);
+        return message;
+    }
 
-	public TransportMessage() {
-	}
-
-	private TransportMessage(String nodeName, int type, Object object) {
-		this.nodeName = nodeName;
-		this.type = type;
-		this.object = object;
-	}
-
+    public static TransportMessage newRequestMessage(String nodeName, NodeConfig nodeConfig) {
+        TransportMessage message = new TransportMessage();
+        message.setNodeName(nodeName);
+        message.setType(TYPE_REQUEST);
+        message.setNodeConfig(nodeConfig);
+        return message;
+    }
 }

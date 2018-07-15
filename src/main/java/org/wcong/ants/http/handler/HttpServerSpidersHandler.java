@@ -1,14 +1,11 @@
 package org.wcong.ants.http.handler;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.http.HttpServerHandler;
-
-import java.io.IOException;
+import reactor.netty.NettyOutbound;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
 
 /**
  * @author wcong<wc19920415@gmail.com>
@@ -16,26 +13,15 @@ import java.io.IOException;
  */
 public class HttpServerSpidersHandler extends HttpServerHandler {
 
-	private static Logger logger = LoggerFactory.getLogger(HttpServerSpidersHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(HttpServerSpidersHandler.class);
 
-	@Override
-	public void handleRequest(ChannelHandlerContext ctx, HttpRequest request, QueryStringDecoder query,
-			HttpContent content) {
-		releaseContent(content);
-		byte[] data = null;
-		try {
-			data = objectMapper.writeValueAsBytes(node.getSpiderManager().getSpiderNames());
-		} catch (IOException e) {
-			logger.error("encode error", e);
-		}
-		if (data == null) {
-			data = new byte[0];
-		}
-		sendResponse(ctx, request, data);
-	}
+    @Override
+    public NettyOutbound handleRequest(HttpServerRequest request, HttpServerResponse response) {
+        return sendResponse(response, node.getSpiderManager().getSpiderNames());
+    }
 
-	@Override
-	public String getHandlerUri() {
-		return "/spiders";
-	}
+    @Override
+    public boolean test(HttpServerRequest request) {
+        return request.uri().equals("/spiders");
+    }
 }

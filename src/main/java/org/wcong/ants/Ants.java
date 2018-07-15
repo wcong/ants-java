@@ -10,36 +10,36 @@ import org.wcong.ants.cluster.support.DefaultNodeConfig;
  */
 public class Ants {
 
-	public static void main(String[] args) {
-		NodeConfig nodeConfig = new DefaultNodeConfig();
-		nodeConfig.load("ants.properties");
-		if (args.length > 1) {
-			parseArgs(args, nodeConfig);
-		}
-		final Node node = new DefaultNode();
-		node.setNodeConfig(nodeConfig);
-		node.init();
-		node.start();
-		node.stop();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-				node.destroy();
-			}
-		});
-	}
+    public static void main(String[] args) {
+        NodeConfig nodeConfig = new DefaultNodeConfig();
+        nodeConfig.load("ants.properties");
+        if (args.length > 1) {
+            parseArgs(args, nodeConfig);
+        }
+        final Node node = new DefaultNode();
+        node.setNodeConfig(nodeConfig);
+        node.init();
+        node.start();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                node.stop();
+                node.destroy();
+            }
+        });
+    }
 
-	private static void parseArgs(String[] args, NodeConfig nodeConfig) {
-		int length = args.length;
-		length /= 2;
-		for (int i = 0; i < length; i++) {
-			int index = i * 2;
-			if (args[index].equals("-tcp")) {
-				nodeConfig.setTcpPort(Integer.valueOf(args[index + 1]));
-			} else if (args[index].equals("-http")) {
-				nodeConfig.setHttpPort(Integer.valueOf(args[index + 1]));
-			} else if (args[index].equals("-data")) {
-				nodeConfig.setDataPath(args[index + 1]);
-			}
-		}
-	}
+    private static void parseArgs(String[] args, NodeConfig nodeConfig) {
+        int length = args.length;
+        length /= 2;
+        for (int i = 0; i < length; i++) {
+            int index = i * 2;
+            if (args[index].equals("-tcp")) {
+                nodeConfig.setTcpPort(Integer.valueOf(args[index + 1]));
+            } else if (args[index].equals("-http")) {
+                nodeConfig.setHttpPort(Integer.valueOf(args[index + 1]));
+            } else if (args[index].equals("-data")) {
+                nodeConfig.setDataPath(args[index + 1]);
+            }
+        }
+    }
 }

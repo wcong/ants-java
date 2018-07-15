@@ -1,16 +1,15 @@
 package org.wcong.ants.http.handler;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wcong.ants.aware.DocumentReaderAware;
-import org.wcong.ants.http.HttpServerHandler;
 import org.wcong.ants.document.DocumentReader;
 import org.wcong.ants.document.Documents;
+import org.wcong.ants.http.HttpServerHandler;
+import reactor.netty.NettyOutbound;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,79 +21,75 @@ import java.util.Map;
  * @author wcong<wc19920415@gmail.com>
  * @since 16/4/11
  */
-public class HttpServerDocumentHandler extends HttpServerHandler implements DocumentReaderAware {
+public class HttpServerDocumentHandler extends HttpServerHandler {
 
-	private Logger logger = LoggerFactory.getLogger(HttpServerDocumentHandler.class);
+    private Logger logger = LoggerFactory.getLogger(HttpServerDocumentHandler.class);
 
-	private DocumentReader documentReader;
+    private DocumentReader documentReader;
 
-	public void setDocumentReader(DocumentReader documentReader) {
-		this.documentReader = documentReader;
-	}
+    public HttpServerDocumentHandler(DocumentReader documentReader) {
+        this.documentReader = documentReader;
+    }
 
-	@Override
-	public void handleRequest(ChannelHandlerContext ctx, HttpRequest request, QueryStringDecoder query,
-			HttpContent content) {
-		releaseContent(content);
-		byte[] data = null;
-		try {
-			SearchParam searchParam = makeSearchParam(query);
-			if (searchParam.valid()) {
-				Documents documents = documentReader
-						.search(searchParam.getSpider(), searchParam.getIndex(), searchParam.getField(),
-								searchParam.getQuery());
-				data = objectMapper.writeValueAsBytes(documents);
-			}
-		} catch (IOException e) {
-			logger.error("json encode error", e);
-		}
-		if (data == null) {
-			data = new byte[0];
-		}
-		sendResponse(ctx, request, data);
-	}
+    private SearchParam makeSearchParam(QueryStringDecoder query) {
+        SearchParam searchParam = new SearchParam();
+        Map<String, List<String>> parameterMap = query.parameters();
+        List<String> spider = parameterMap.get("spider");
+        if (spider != null && !spider.isEmpty()) {
+            searchParam.setSpider(spider.get(0));
+        }
+        List<String> index = parameterMap.get("index");
+        if (index != null && !index.isEmpty()) {
+            searchParam.setIndex(index.get(0));
+        }
+        List<String> field = parameterMap.get("field");
+        if (field != null && !field.isEmpty()) {
+            searchParam.setField(field.get(0));
+        }
+        List<String> searchQuery = parameterMap.get("query");
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            searchParam.setQuery(searchQuery.get(0));
+        }
+        return searchParam;
 
-	private SearchParam makeSearchParam(QueryStringDecoder query) {
-		SearchParam searchParam = new SearchParam();
-		Map<String, List<String>> parameterMap = query.parameters();
-		List<String> spider = parameterMap.get("spider");
-		if (spider != null && !spider.isEmpty()) {
-			searchParam.setSpider(spider.get(0));
-		}
-		List<String> index = parameterMap.get("index");
-		if (index != null && !index.isEmpty()) {
-			searchParam.setIndex(index.get(0));
-		}
-		List<String> field = parameterMap.get("field");
-		if (field != null && !field.isEmpty()) {
-			searchParam.setField(field.get(0));
-		}
-		List<String> searchQuery = parameterMap.get("query");
-		if (searchQuery != null && !searchQuery.isEmpty()) {
-			searchParam.setQuery(searchQuery.get(0));
-		}
-		return searchParam;
+    }
 
-	}
+    @Override
+    public NettyOutbound handleRequest(HttpServerRequest request, HttpServerResponse response) {
+        SearchParam searchParam = makeSearchParam(new QueryStringDecoder(request.uri()));
+        if (!searchParam.valid()) {
+            return sendResponse(response, "param wrong");
+        }
+        Documents documents;
+        try {
+            documents = documentReader
+                    .search(searchParam.getSpider(), searchParam.getIndex(), searchParam.getField(),
+                            searchParam.getQuery());
+        } catch (IOException e) {
+            logger.error("search wrong" + e.getMessage(), e);
+            return sendResponse(response, e.getMessage());
+        }
+        return sendResponse(response, documents);
+    }
 
-	@Override
-	public String getHandlerUri() {
-		return "/document";
-	}
+    @Override
+    public boolean test(HttpServerRequest request) {
+        return request.uri().equals("/document");
+    }
 
-	@Data
-	public static class SearchParam {
+    @Data
+    public static class SearchParam {
 
-		private String spider;
+        private String spider;
 
-		private String index;
+        private String index;
 
-		private String field;
+        private String field;
 
-		private String query;
+        private String query;
 
-		public boolean valid() {
-			return spider != null && index != null && field != null && query != null;
-		}
-	}
+        boolean valid() {
+            return spider != null && index != null && field != null && query != null;
+        }
+    }
 }

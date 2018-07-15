@@ -53,7 +53,7 @@ public class DefaultDistributer implements Distributer {
 		}
 	}
 
-	private NodeConfig selectConfig() {
+	public NodeConfig selectConfig() {
 		if (nodeIndex >= cluster.getNodeConfigs().size()) {
 			nodeIndex = 0;
 		}

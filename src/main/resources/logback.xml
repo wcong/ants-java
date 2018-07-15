@@ -38,7 +38,7 @@
             <Pattern>${log_pattern}</Pattern>
         </encoder>
     </appender>
-    <root level="WARN">
+    <root level="DEBUG">
         <appender-ref ref="ROOT_APPENDER"/>
         <appender-ref ref="STD_OUT"/>
     </root>
