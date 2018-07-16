@@ -5,6 +5,8 @@ import org.wcong.ants.cluster.NodeConfig;
 import org.wcong.ants.cluster.support.DefaultNode;
 import org.wcong.ants.cluster.support.DefaultNodeConfig;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * Hello world!
  */
@@ -16,6 +18,7 @@ public class Ants {
         if (args.length > 1) {
             parseArgs(args, nodeConfig);
         }
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         final Node node = new DefaultNode();
         node.setNodeConfig(nodeConfig);
         node.init();
@@ -26,6 +29,11 @@ public class Ants {
                 node.destroy();
             }
         });
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void parseArgs(String[] args, NodeConfig nodeConfig) {

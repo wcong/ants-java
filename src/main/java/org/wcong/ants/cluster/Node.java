@@ -2,6 +2,8 @@ package org.wcong.ants.cluster;
 
 import org.wcong.ants.LifeCircle;
 import org.wcong.ants.spider.SpiderManager;
+import org.wcong.ants.transport.TransportMessage;
+import reactor.core.publisher.Flux;
 
 /**
  * about node
@@ -15,12 +17,14 @@ import org.wcong.ants.spider.SpiderManager;
  */
 public interface Node extends LifeCircle {
 
-	void setNodeConfig(NodeConfig nodeConfig);
+    void setNodeConfig(NodeConfig nodeConfig);
 
-	SpiderManager getSpiderManager();
+    SpiderManager getSpiderManager();
 
-	String getName();
+    String getName();
 
-	Cluster getCluster();
+    Cluster getCluster();
+
+    Flux<Void> distributer(TransportMessage message);
 
 }

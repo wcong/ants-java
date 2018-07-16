@@ -7,10 +7,8 @@ import org.wcong.ants.cluster.Cluster;
 import org.wcong.ants.cluster.Distributer;
 import org.wcong.ants.cluster.Node;
 import org.wcong.ants.cluster.NodeConfig;
-import org.wcong.ants.crawler.Crawler;
 import org.wcong.ants.crawler.Parser;
 import org.wcong.ants.crawler.Result;
-import org.wcong.ants.crawler.support.DefaultCrawler;
 import org.wcong.ants.document.DocumentReader;
 import org.wcong.ants.document.DocumentWriter;
 import org.wcong.ants.document.lucene.LuceneDocumentReader;
@@ -64,15 +62,13 @@ public class DefaultNode implements Node {
 
     private DisposableServer disposableTcpServer;
 
-    private TcpClient tcpClientToMaster = TcpClient.create();
+    private TcpClient tcpClientToMaster;
 
     private Connection connectionToMaster;
 
     private Map<String, NettyOutbound> outboundMap = new ConcurrentHashMap<>();
 
     private SpiderManager spiderManager = new DefaultSpiderManager();
-
-    private Crawler crawler = new DefaultCrawler();
 
     private Downloader downloader = new DefaultDownloader();
 
@@ -113,14 +109,10 @@ public class DefaultNode implements Node {
 
         spiderManager.loadSpider(nodeConfig.getSpiderPackages());
 
-        crawler.setSpiderManager(spiderManager);
-        crawler.setDocumentWriter(documentWriter);
-
-
         distributer.setCluster(cluster);
 
         if (!nodeConfig.isLocalMaster()) {
-            tcpClientToMaster = tcpClientToMaster
+            tcpClientToMaster = TcpClient.create()
                     .host(nodeConfig.getMasterIp())
                     .port(nodeConfig.getMasterPort())
                     .doOnConnected(con ->
@@ -154,8 +146,8 @@ public class DefaultNode implements Node {
                 new HttpServerDocumentAnalysisHandler(documentReader),
                 new HttpServerDocumentHandler(documentReader),
                 new HttpServerDocumentsHandler(documentReader),
-                new HttpServerSpiderHandler(),
-                new HttpServerSpidersHandler()
+                new HttpServerSpiderHandler(this),
+                new HttpServerSpidersHandler(this)
         );
         httpServer = httpServer
                 .host("127.0.0.1")
@@ -181,7 +173,7 @@ public class DefaultNode implements Node {
 
     }
 
-    private Flux<Void> distributer(TransportMessage message) {
+    public Flux<Void> distributer(TransportMessage message) {
         return Flux
                 .fromStream(message.getRequestList().stream())
                 .buffer(10)
@@ -211,14 +203,19 @@ public class DefaultNode implements Node {
 
     private Mono<Void> downloader(Request req) {
         HttpClient httpClient = HttpClient.create()
-                .baseUrl(req.getUrl())
-                .headers(header ->
-                        req
-                                .getHeader()
-                                .forEach(header::set))
-                .headers(header -> header.set("cookie", req.getCookies()
-                        .entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
-                        .reduce((v1, v2) -> v1 + ";" + v2)));
+                .baseUrl(req.getUrl());
+        if (req.getHeader() != null) {
+            httpClient = httpClient.headers(header -> req
+                    .getHeader()
+                    .forEach(header::set));
+        }
+        if (req.getCookies() != null) {
+            httpClient = httpClient.headers(
+                    header -> header.set("cookie", req.getCookies()
+                            .entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
+                            .reduce((v1, v2) -> v1 + ";" + v2)));
+        }
+
 
         switch (req.getMethod()) {
             case "POST":
@@ -276,23 +273,6 @@ public class DefaultNode implements Node {
             logger.info("start listen http at {}:{}", disposableHttpServer.host(), disposableHttpServer.port());
         }
 
-
-        new Thread(new Runnable() {
-            public void run() {
-                crawler.start();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            public void run() {
-                downloader.start();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            public void run() {
-                distributer.start();
-            }
-        }).start();
-
         disposableTcpServer = tcpServer.bind().block();
         if (disposableTcpServer != null) {
             logger.info("start tcp http at {}:{}", disposableTcpServer.host(), disposableTcpServer.port());
@@ -313,10 +293,10 @@ public class DefaultNode implements Node {
 
     public void stop() {
         disposableHttpServer.dispose();
-        crawler.stop();
-        downloader.stop();
         disposableTcpServer.dispose();
-        connectionToMaster.dispose();
+        if (connectionToMaster != null) {
+            connectionToMaster.dispose();
+        }
     }
 
     public void destroy() {

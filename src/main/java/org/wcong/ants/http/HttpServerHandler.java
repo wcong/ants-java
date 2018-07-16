@@ -28,10 +28,6 @@ public abstract class HttpServerHandler {
 
     protected Node node;
 
-    public void setNode(Node node) {
-        this.node = node;
-    }
-
     public abstract NettyOutbound handleRequest(HttpServerRequest request, HttpServerResponse response);
 
     public abstract boolean test(HttpServerRequest request);

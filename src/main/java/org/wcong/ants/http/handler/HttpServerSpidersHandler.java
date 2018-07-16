@@ -2,6 +2,7 @@ package org.wcong.ants.http.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wcong.ants.cluster.Node;
 import org.wcong.ants.http.HttpServerHandler;
 import reactor.netty.NettyOutbound;
 import reactor.netty.http.server.HttpServerRequest;
@@ -14,6 +15,10 @@ import reactor.netty.http.server.HttpServerResponse;
 public class HttpServerSpidersHandler extends HttpServerHandler {
 
     private static Logger logger = LoggerFactory.getLogger(HttpServerSpidersHandler.class);
+
+    public HttpServerSpidersHandler(Node node) {
+        this.node = node;
+    }
 
     @Override
     public NettyOutbound handleRequest(HttpServerRequest request, HttpServerResponse response) {
