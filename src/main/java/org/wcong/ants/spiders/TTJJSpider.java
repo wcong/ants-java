@@ -36,7 +36,7 @@ public class TTJJSpider extends Spider {
     static {
         basicDataSource.setDriverClassName("com.mysql.jdbc.Driver");
         basicDataSource.setUsername("root");
-        basicDataSource.setPassword("root123");
+        basicDataSource.setPassword("");
         basicDataSource.setUrl("jdbc:MySQL://localhost:3306/fundation?characterEncoding=utf8&amp;autoReconnect");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {

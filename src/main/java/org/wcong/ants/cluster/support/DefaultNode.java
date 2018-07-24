@@ -1,5 +1,6 @@
 package org.wcong.ants.cluster.support;
 
+import io.netty.handler.codec.http.HttpContentDecompressor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wcong.ants.LifeCircle;
@@ -202,8 +203,16 @@ public class DefaultNode implements Node {
     }
 
     private Mono<Void> downloader(Request req) {
-        HttpClient httpClient = HttpClient.create()
-                .baseUrl(req.getUrl());
+        HttpClient httpClient = HttpClient.create().headers(headers -> {
+            headers.set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            headers.set("Accept-Encoding", "gzip, deflate");
+            headers.set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7");
+            headers.set("Cache-Control", "no-cache");
+            headers.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+        }).doOnRequest((re, con) -> {
+            con.addHandlerFirst("gzipDecompressor", new HttpContentDecompressor());
+        });
+
         if (req.getHeader() != null) {
             httpClient = httpClient.headers(header -> req
                     .getHeader()
@@ -219,22 +228,23 @@ public class DefaultNode implements Node {
 
         switch (req.getMethod()) {
             case "POST":
-                return httpClient.post().send(ByteBufFlux.fromString(Mono.just(req.getBody())))
+                return httpClient.post().uri(req.getUrl()).send(ByteBufFlux.fromString(Mono.just(req.getBody())))
                         .response((res, content) -> parser(req, res, content)).then();
             case "PUT":
-                return httpClient.put().send(ByteBufFlux.fromString(Mono.just(req.getBody())))
+                return httpClient.put().uri(req.getUrl()).send(ByteBufFlux.fromString(Mono.just(req.getBody())))
                         .response((res, content) -> parser(req, res, content)).then();
             case "DELETE":
                 return httpClient.delete()
+                        .uri(req.getUrl())
                         .send(ByteBufFlux.fromString(Mono.just(req.getBody())))
                         .response((res, content) -> parser(req, res, content)).then();
             default:
-                return httpClient.get().response((res, content) -> parser(req, res, content)).then();
+                return httpClient.get().uri(req.getUrl()).response((res, content) -> parser(req, res, content)).then();
         }
     }
 
     private Mono<Void> parser(Request req, HttpClientResponse res, ByteBufFlux content) {
-        content.asString().reduce((s1, s2) -> s1 + s2).flatMap(result -> {
+        return content.asString().reduce((s1, s2) -> s1 + s2).flatMap(result -> {
             Spider spider = spiderManager.getSpider(req.getSpiderName());
             if (spider == null) {
                 return Mono.empty();
@@ -256,14 +266,13 @@ public class DefaultNode implements Node {
             if (parseResult.getRequestList() != null) {
                 TransportMessage message = TransportMessage.newRequestMessage(req.getNodeName(), parseResult.getRequestList());
                 if (nodeConfig.isLocalMaster()) {
-                    distributer(message);
+                    return distributer(message).then();
                 } else {
                     return outboundMap.get(cluster.getMasterNode().getNodeName()).send(Mono.just(message).map(JsonUtils.jsonEncoder)).then();
                 }
             }
             return Mono.empty();
         });
-        return Mono.empty();
     }
 
     public void start() {
