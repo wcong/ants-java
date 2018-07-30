@@ -48,6 +48,8 @@ public class Request implements Serializable {
 
     private String body;
 
+    private Map<String, String> form;
+
     private String method = METHOD_GET;
 
     private Map<String, String> cookies;
@@ -65,5 +67,7 @@ public class Request implements Serializable {
     private String proxy;
 
     private int retry;
+
+    private Map<String, Object> context;
 
 }

@@ -30,6 +30,15 @@ public class JsonUtils {
         return Collections.emptyMap();
     }
 
+    public static String toJsonString(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     @SuppressWarnings("unchecked")
     public static List<Object> parseJsonList(String jsonString) {
         try {

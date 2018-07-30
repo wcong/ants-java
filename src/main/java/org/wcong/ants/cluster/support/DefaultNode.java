@@ -37,6 +37,8 @@ import reactor.netty.tcp.TcpClient;
 import reactor.netty.tcp.TcpServer;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -182,6 +184,7 @@ public class DefaultNode implements Node {
                     NodeConfig nodeConfig = distributer.selectConfig();
                     if (nodeConfig.isLocalMaster()) {
                         return Flux.fromStream(request.stream())
+                                .delaySequence(Duration.ofMillis(100))
                                 .flatMap(this::downloader);
                     } else {
                         return outboundMap
@@ -204,10 +207,10 @@ public class DefaultNode implements Node {
 
     private Mono<Void> downloader(Request req) {
         HttpClient httpClient = HttpClient.create().headers(headers -> {
-            headers.set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-            headers.set("Accept-Encoding", "gzip, deflate");
-            headers.set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7");
-            headers.set("Cache-Control", "no-cache");
+            headers.set("accept", "*");
+            headers.set("accept-encoding", "gzip, deflate");
+            headers.set("accept-language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7");
+            headers.set("cache-control", "no-cache");
             headers.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
         }).doOnRequest((re, con) -> {
             con.addHandlerFirst("gzipDecompressor", new HttpContentDecompressor());
@@ -228,6 +231,14 @@ public class DefaultNode implements Node {
 
         switch (req.getMethod()) {
             case "POST":
+                if (req.getForm() != null) {
+                    return httpClient.noChunkedTransfer().post().
+                            uri(req.getUrl())
+                            .sendForm((request, form) -> {
+                                form.multipart(false).charset(Charset.forName("UTF-8"));
+                                req.getForm().forEach(form::attr);
+                            }).response((res, content) -> parser(req, res, content)).then();
+                }
                 return httpClient.post().uri(req.getUrl()).send(ByteBufFlux.fromString(Mono.just(req.getBody())))
                         .response((res, content) -> parser(req, res, content)).then();
             case "PUT":
@@ -253,7 +264,15 @@ public class DefaultNode implements Node {
             if (parser == null) {
                 return Mono.empty();
             }
-            Result parseResult = parser.parse(downloader.makeResponse(req, res, result));
+            Result parseResult = null;
+            try {
+                parseResult = parser.parse(downloader.makeResponse(req, res, result));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (parseResult == null) {
+                return Mono.empty();
+            }
             if (parseResult.getDataList() != null) {
                 for (Result.Data data : parseResult.getDataList()) {
                     try {
