@@ -225,7 +225,7 @@ public class DefaultNode implements Node {
             httpClient = httpClient.headers(
                     header -> header.set("cookie", req.getCookies()
                             .entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
-                            .reduce((v1, v2) -> v1 + ";" + v2)));
+                            .reduce((v1, v2) -> v1 + ";" + v2).get()));
         }
 
 
@@ -303,7 +303,7 @@ public class DefaultNode implements Node {
 
         disposableTcpServer = tcpServer.bind().block();
         if (disposableTcpServer != null) {
-            logger.info("start tcp http at {}:{}", disposableTcpServer.host(), disposableTcpServer.port());
+            logger.info("start listen tcp at {}:{}", disposableTcpServer.host(), disposableTcpServer.port());
         }
 
         if (tcpClientToMaster != null) {
